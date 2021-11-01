@@ -1,9 +1,6 @@
 package kitchenpos.application;
 
-import kitchenpos.dao.MenuDao;
-import kitchenpos.dao.MenuGroupDao;
-import kitchenpos.dao.MenuProductDao;
-import kitchenpos.dao.ProductDao;
+import kitchenpos.dao.*;
 import kitchenpos.domain.Menu;
 import kitchenpos.domain.MenuProduct;
 import kitchenpos.exception.KitchenposException;
@@ -34,16 +31,15 @@ class MenuServiceTest extends ServiceTest {
     private MenuService menuService;
 
     @Mock
-    private MenuGroupDao menuGroupDao;
+    private JpaMenuGroupDao menuGroupDao;
 
     @Mock
-    private MenuDao menuDao;
+    private JpaMenuDao menuDao;
+    @Mock
+    private JpaMenuProductDao menuProductDao;
 
     @Mock
-    private MenuProductDao menuProductDao;
-
-    @Mock
-    private ProductDao productDao;
+    private JpaProductDao productDao;
 
     @Test
     @DisplayName("올바르게 메뉴 생성 요청이 들어오면 수행된다.")
@@ -152,9 +148,9 @@ class MenuServiceTest extends ServiceTest {
         menus.add(menu2);
         when(menuDao.findAll())
                 .thenReturn(menus);
-        when(menuProductDao.findAllByMenuId(1L))
+        when(menuProductDao.findAllByMenu_Id(1L))
                 .thenReturn(Collections.singletonList(menuProduct));
-        when(menuProductDao.findAllByMenuId(2L))
+        when(menuProductDao.findAllByMenu_Id(2L))
                 .thenReturn(Collections.singletonList(menuProduct2));
 
         List<Menu> actual = menuService.list();

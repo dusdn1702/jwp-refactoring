@@ -4,20 +4,29 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import kitchenpos.domain.OrderTable;
+import kitchenpos.domain.TableGroup;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
+import static kitchenpos.ui.TableGroupRestControllerTest.postTableGroup;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TableRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("OrderTable 생성")
     void create() {
+        TableGroup tableGroup = new TableGroup();
+        tableGroup.setCreatedDate(LocalDateTime.now());
+        tableGroup.setId(1L);
+
         OrderTable orderTable = new OrderTable();
+        orderTable.setTableGroupId(tableGroup.getId());
         orderTable.setEmpty(true);
 
         ExtractableResponse<Response> response = postOrderTable(orderTable);

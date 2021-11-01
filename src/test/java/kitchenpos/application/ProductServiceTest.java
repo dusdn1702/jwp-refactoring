@@ -1,6 +1,6 @@
 package kitchenpos.application;
 
-import kitchenpos.dao.ProductDao;
+import kitchenpos.dao.JpaProductDao;
 import kitchenpos.domain.Product;
 import kitchenpos.exception.KitchenposException;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +26,7 @@ class ProductServiceTest extends ServiceTest {
     private ProductService productService;
 
     @Mock
-    private ProductDao productDao;
+    private JpaProductDao productDao;
 
     @Test
     @DisplayName("상품을 생성한다.")

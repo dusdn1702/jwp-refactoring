@@ -1,8 +1,6 @@
 package kitchenpos.application;
 
-import kitchenpos.dao.OrderDao;
-import kitchenpos.dao.OrderTableDao;
-import kitchenpos.dao.TableGroupDao;
+import kitchenpos.dao.*;
 import kitchenpos.domain.OrderTable;
 import kitchenpos.domain.TableGroup;
 import kitchenpos.exception.KitchenposException;
@@ -28,13 +26,13 @@ class TableGroupServiceTest extends ServiceTest {
     private TableGroupService tableGroupService;
 
     @Mock
-    private OrderDao orderDao;
+    private JpaOrderDao orderDao;
 
     @Mock
-    private OrderTableDao orderTableDao;
+    private JpaOrderTableDao orderTableDao;
 
     @Mock
-    private TableGroupDao tableGroupDao;
+    private JpaTableGroupDao tableGroupDao;
 
     private TableGroup tableGroup;
     private final List<OrderTable> orderTables = new ArrayList<>();
@@ -137,7 +135,7 @@ class TableGroupServiceTest extends ServiceTest {
         orderTable2.setTableGroupId(1L);
         orderTable2.setEmpty(false);
 
-        when(orderTableDao.findAllByTableGroupId(anyLong()))
+        when(orderTableDao.findAllByTableGroup_Id(anyLong()))
                 .thenReturn(orderTables);
         when(orderDao.existsByOrderTableIdInAndOrderStatusIn(anyList(), anyList()))
                 .thenReturn(false);
@@ -157,7 +155,7 @@ class TableGroupServiceTest extends ServiceTest {
         orderTable2.setTableGroupId(1L);
         orderTable2.setEmpty(false);
 
-        when(orderTableDao.findAllByTableGroupId(anyLong()))
+        when(orderTableDao.findAllByTableGroup_Id(anyLong()))
                 .thenReturn(orderTables);
         when(orderDao.existsByOrderTableIdInAndOrderStatusIn(anyList(), anyList()))
                 .thenReturn(true);

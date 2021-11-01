@@ -1,7 +1,7 @@
 package kitchenpos.application;
 
-import kitchenpos.dao.OrderDao;
-import kitchenpos.dao.OrderTableDao;
+import kitchenpos.dao.JpaOrderDao;
+import kitchenpos.dao.JpaOrderTableDao;
 import kitchenpos.domain.OrderTable;
 import kitchenpos.exception.KitchenposException;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,10 +28,10 @@ class TableServiceTest {
     private TableService tableService;
 
     @Mock
-    private OrderDao orderDao;
+    private JpaOrderDao orderDao;
 
     @Mock
-    private OrderTableDao orderTableDao;
+    private JpaOrderTableDao orderTableDao;
 
     private OrderTable orderTable;
     private OrderTable orderTable2;
@@ -89,7 +89,7 @@ class TableServiceTest {
     void changeEmpty() {
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.of(orderTable));
-        when(orderDao.existsByOrderTableIdAndOrderStatusIn(anyLong(), anyList()))
+        when(orderDao.existsByOrderTable_IdAndOrderStatusIn(anyLong(), anyList()))
                 .thenReturn(false);
         when(orderTableDao.save(any(OrderTable.class)))
                 .thenReturn(orderTable2);
@@ -127,7 +127,7 @@ class TableServiceTest {
     void changeEmptyExceptionStatus() {
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.of(orderTable));
-        when(orderDao.existsByOrderTableIdAndOrderStatusIn(anyLong(), anyList()))
+        when(orderDao.existsByOrderTable_IdAndOrderStatusIn(anyLong(), anyList()))
                 .thenReturn(true);
 
         assertThatThrownBy(() -> tableService.changeEmpty(1L, orderTable2))

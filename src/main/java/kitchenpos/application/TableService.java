@@ -1,7 +1,7 @@
 package kitchenpos.application;
 
-import kitchenpos.dao.OrderDao;
-import kitchenpos.dao.OrderTableDao;
+import kitchenpos.dao.JpaOrderDao;
+import kitchenpos.dao.JpaOrderTableDao;
 import kitchenpos.domain.OrderStatus;
 import kitchenpos.domain.OrderTable;
 import kitchenpos.exception.KitchenposException;
@@ -16,10 +16,10 @@ import static kitchenpos.exception.KitchenposException.*;
 
 @Service
 public class TableService {
-    private final OrderDao orderDao;
-    private final OrderTableDao orderTableDao;
+    private final JpaOrderDao orderDao;
+    private final JpaOrderTableDao orderTableDao;
 
-    public TableService(final OrderDao orderDao, final OrderTableDao orderTableDao) {
+    public TableService(final JpaOrderDao orderDao, final JpaOrderTableDao orderTableDao) {
         this.orderDao = orderDao;
         this.orderTableDao = orderTableDao;
     }
@@ -45,7 +45,7 @@ public class TableService {
             throw new KitchenposException(IMPOSSIBLE_TABLE_GROUP_ID);
         }
 
-        if (orderDao.existsByOrderTableIdAndOrderStatusIn(
+        if (orderDao.existsByOrderTable_IdAndOrderStatusIn(
                 orderTableId, Arrays.asList(OrderStatus.COOKING.name(), OrderStatus.MEAL.name()))) {
             throw new KitchenposException(IMPOSSIBLE_TABLE_STATUS);
         }

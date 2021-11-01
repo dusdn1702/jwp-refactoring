@@ -1,9 +1,6 @@
 package kitchenpos.application;
 
-import kitchenpos.dao.MenuDao;
-import kitchenpos.dao.OrderDao;
-import kitchenpos.dao.OrderLineItemDao;
-import kitchenpos.dao.OrderTableDao;
+import kitchenpos.dao.*;
 import kitchenpos.domain.Order;
 import kitchenpos.domain.OrderLineItem;
 import kitchenpos.domain.OrderStatus;
@@ -30,16 +27,16 @@ class OrderServiceTest extends ServiceTest {
     private OrderService orderService;
 
     @Mock
-    private MenuDao menuDao;
+    private JpaMenuDao menuDao;
 
     @Mock
-    private OrderDao orderDao;
+    private JpaOrderDao orderDao;
 
     @Mock
-    private OrderLineItemDao orderLineItemDao;
+    private JpaOrderLineItemDao orderLineItemDao;
 
     @Mock
-    private OrderTableDao orderTableDao;
+    private JpaOrderTableDao orderTableDao;
 
     @Test
     @DisplayName("주문을 생성한다.")
@@ -130,7 +127,7 @@ class OrderServiceTest extends ServiceTest {
 
         when(orderDao.findAll())
                 .thenReturn(orders);
-        when(orderLineItemDao.findAllByOrderId(anyLong()))
+        when(orderLineItemDao.findAllByOrder_Id(anyLong()))
                 .thenReturn(orderLineItems);
 
         List<Order> actual = orderService.list();
@@ -152,7 +149,7 @@ class OrderServiceTest extends ServiceTest {
                 .thenReturn(Optional.of(order));
         when(orderDao.save(any(Order.class)))
                 .thenReturn(completeOrder);
-        when(orderLineItemDao.findAllByOrderId(anyLong()))
+        when(orderLineItemDao.findAllByOrder_Id(anyLong()))
                 .thenReturn(orderLineItems);
 
         Order actual = orderService.changeOrderStatus(1L, completeOrder);

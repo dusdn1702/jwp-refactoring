@@ -1,6 +1,6 @@
 package kitchenpos.application;
 
-import kitchenpos.dao.ProductDao;
+import kitchenpos.dao.JpaProductDao;
 import kitchenpos.domain.Product;
 import kitchenpos.exception.KitchenposException;
 import org.springframework.stereotype.Service;
@@ -12,9 +12,9 @@ import java.util.Objects;
 
 @Service
 public class ProductService {
-    private final ProductDao productDao;
+    private final JpaProductDao productDao;
 
-    public ProductService(final ProductDao productDao) {
+    public ProductService(final JpaProductDao productDao) {
         this.productDao = productDao;
     }
 
