@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,20 +21,19 @@ class TableGroupRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("TableGroup 생성")
     void create() {
-        OrderTable orderTable = new OrderTable();
-        orderTable.setEmpty(true);
+        TableGroup tableGroup = new TableGroup(LocalDateTime.now());
+
+        OrderTable orderTable = new OrderTable(tableGroup, 0, true);
         orderTable = postOrderTable(orderTable).as(OrderTable.class);
 
-        OrderTable orderTable2 = new OrderTable();
-        orderTable2.setEmpty(true);
+        OrderTable orderTable2 = new OrderTable(tableGroup, 0, true);
         orderTable2 = postOrderTable(orderTable2).as(OrderTable.class);
 
         List<OrderTable> orderTables = new ArrayList<>();
         orderTables.add(orderTable);
         orderTables.add(orderTable2);
 
-        TableGroup tableGroup = new TableGroup();
-        tableGroup.setOrderTables(orderTables);
+        tableGroup.addAllOrderTables(orderTables);
 
         ExtractableResponse<Response> response = postTableGroup(tableGroup);
         TableGroup savedTableGroup = response.as(TableGroup.class);
@@ -45,20 +45,19 @@ class TableGroupRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("TableGroup 해제")
     void ungroup() {
-        OrderTable orderTable = new OrderTable();
-        orderTable.setEmpty(true);
+        TableGroup tableGroup = new TableGroup(LocalDateTime.now());
+
+        OrderTable orderTable = new OrderTable(tableGroup, 0, true);
         orderTable = postOrderTable(orderTable).as(OrderTable.class);
 
-        OrderTable orderTable2 = new OrderTable();
-        orderTable2.setEmpty(true);
+        OrderTable orderTable2 = new OrderTable(tableGroup, 0, true);
         orderTable2 = postOrderTable(orderTable2).as(OrderTable.class);
 
         List<OrderTable> orderTables = new ArrayList<>();
         orderTables.add(orderTable);
         orderTables.add(orderTable2);
 
-        TableGroup tableGroup = new TableGroup();
-        tableGroup.setOrderTables(orderTables);
+        tableGroup.addAllOrderTables(orderTables);
         TableGroup savedTableGroup = postTableGroup(tableGroup).as(TableGroup.class);
 
         ExtractableResponse<Response> response = deleteTableGroup(savedTableGroup.getId());

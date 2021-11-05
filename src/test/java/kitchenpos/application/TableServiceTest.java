@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TableServiceTest {
+class TableServiceTest extends ServiceTest{
     @InjectMocks
     private TableService tableService;
 
@@ -33,22 +33,10 @@ class TableServiceTest {
     @Mock
     private JpaOrderTableDao orderTableDao;
 
-    private OrderTable orderTable;
-    private OrderTable orderTable2;
-
     @BeforeEach
     void setUp() {
-        orderTable = new OrderTable();
-        orderTable.setId(1L);
-        orderTable.setEmpty(false);
-        orderTable.setTableGroupId(null);
-        orderTable.setNumberOfGuests(3);
-
-        orderTable2 = new OrderTable();
-        orderTable2.setId(1L);
-        orderTable2.setEmpty(true);
-        orderTable2.setTableGroupId(null);
-        orderTable2.setNumberOfGuests(6);
+        orderTable = new OrderTable(1L, null, 3, false);
+        orderTable2 = new OrderTable(1L, null, 6, true);
     }
 
     @Test
@@ -66,10 +54,7 @@ class TableServiceTest {
     @Test
     @DisplayName("모든 주문 테이블을 조회한다.")
     void list() {
-        OrderTable orderTable2 = new OrderTable();
-        orderTable2.setId(null);
-        orderTable2.setTableGroupId(null);
-        orderTable2.setEmpty(true);
+        orderTable2 = new OrderTable(null, null, 0, true);
 
         List<OrderTable> orderTables = new ArrayList<>();
         orderTables.add(orderTable);
@@ -113,7 +98,7 @@ class TableServiceTest {
     @Test
     @DisplayName("주문테이블에 테이블 그룹이 존재하면 예외가 발생한다.")
     void changeEmptyExceptionTableGroup() {
-        orderTable.setTableGroupId(1L);
+        orderTable.makeTableGroup(tableGroup);
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.of(orderTable));
 
@@ -142,7 +127,7 @@ class TableServiceTest {
                 .thenReturn(Optional.of(orderTable));
         assertThat(orderTable.getNumberOfGuests()).isEqualTo(3);
 
-        orderTable.setNumberOfGuests(orderTable2.getNumberOfGuests());
+        orderTable.changeNumberOfGuests(orderTable2.getNumberOfGuests());
         when(orderTableDao.save(any(OrderTable.class)))
                 .thenReturn(orderTable);
         OrderTable actual = tableService.changeEmpty(1L, orderTable2);
@@ -152,7 +137,7 @@ class TableServiceTest {
     @Test
     @DisplayName("주문 테이블의 손님 수가 0보다 작으면 에러가 발생한다.")
     void changeNumberOfGuestsExceptionNegative() {
-        orderTable.setNumberOfGuests(-1);
+        orderTable.changeNumberOfGuests(-1);
         assertThatThrownBy(() -> tableService.changeNumberOfGuests(1L, orderTable))
                 .isInstanceOf(KitchenposException.class)
                 .hasMessage(IMPOSSIBLE_NUMBER_OF_GUESTS);
@@ -171,7 +156,7 @@ class TableServiceTest {
     @Test
     @DisplayName("손님 수 변경 시 주문 테이블이 비어있으면 에러가 발생한다.")
     void changeNumberOfGuestsExceptionEmptyTable() {
-        orderTable.setEmpty(true);
+        orderTable.makeEmpty(true);
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.of(orderTable));
         assertThatThrownBy(() -> tableService.changeNumberOfGuests(1L, orderTable2))

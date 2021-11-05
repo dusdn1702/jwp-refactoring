@@ -18,9 +18,7 @@ class ProductRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("Product 생성")
     void create() {
-        Product product = new Product();
-        product.setName("떡볶이");
-        product.setPrice(BigDecimal.valueOf(10000));
+        Product product = new Product("떡볶이", BigDecimal.valueOf(10000));
 
         ExtractableResponse<Response> response = postProduct(product);
         Product savedProduct = response.as(Product.class);
@@ -32,14 +30,10 @@ class ProductRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("모든 Product 조회")
     void list() {
-        Product product = new Product();
-        product.setName("떡볶이");
-        product.setPrice(BigDecimal.valueOf(10000));
+        Product product = new Product("떡볶이", BigDecimal.valueOf(10000));
         postProduct(product);
 
-        Product product1 = new Product();
-        product1.setName("순대");
-        product1.setPrice(BigDecimal.valueOf(3000));
+        Product product1 = new Product("순대", BigDecimal.valueOf(3000));
         postProduct(product1);
 
         ExtractableResponse<Response> response = getProducts();

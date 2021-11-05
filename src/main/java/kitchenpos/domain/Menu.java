@@ -24,6 +24,23 @@ public class Menu {
     @OneToMany(mappedBy = "menu")
     private List<MenuProduct> menuProducts;
 
+    protected Menu() {}
+
+    public Menu(String name, BigDecimal price, MenuGroup menuGroup) {
+        this.name = name;
+        this.price = price;
+        this.menuGroup = menuGroup;
+    }
+
+    public Menu(Long id, String name, BigDecimal price, MenuGroup menuGroup) {
+        this(name, price, menuGroup);
+        this.id = id;
+    }
+
+    public void addAllMenuProducts(final List<MenuProduct> menuProducts) {
+        this.menuProducts = menuProducts;
+    }
+
     public Long getId() {
         return id;
     }
@@ -58,9 +75,5 @@ public class Menu {
 
     public List<MenuProduct> getMenuProducts() {
         return menuProducts;
-    }
-
-    public void setMenuProducts(final List<MenuProduct> menuProducts) {
-        this.menuProducts = menuProducts;
     }
 }

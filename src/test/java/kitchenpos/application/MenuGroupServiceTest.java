@@ -36,9 +36,7 @@ class MenuGroupServiceTest extends ServiceTest {
     @Test
     @DisplayName("모든 메뉴그룹을 조회한다.")
     void list() {
-        MenuGroup menuGroup2 = new MenuGroup();
-        menuGroup2.setName("그룹2");
-        menuGroup2.setId(2L);
+        MenuGroup menuGroup2 = new MenuGroup(2L, "그룹2");
 
         List<MenuGroup> menuGroups = new ArrayList<>();
         menuGroups.add(menuGroup);

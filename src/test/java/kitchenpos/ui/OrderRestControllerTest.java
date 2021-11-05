@@ -27,44 +27,30 @@ class OrderRestControllerTest extends ControllerTest {
     @BeforeEach
     void setUp() {
         super.setUp();
-        MenuGroup menuGroup = new MenuGroup();
-        menuGroup.setName("분식");
+        MenuGroup menuGroup = new MenuGroup("분식");
         MenuGroup savedMenuGroup = postMenuGroup(menuGroup).as(MenuGroup.class);
 
-        Product product = new Product();
-        product.setName("떡볶이");
-        product.setPrice(BigDecimal.valueOf(10000));
+        Product product = new Product("떡볶이", BigDecimal.valueOf(10000));
         Product savedProduct = postProduct(product).as(Product.class);
 
-        MenuProduct menuProduct = new MenuProduct();
-        menuProduct.setQuantity(10);
-        menuProduct.setProductId(savedProduct.getId());
+        Menu menu = new Menu("떡볶이", BigDecimal.valueOf(3000), savedMenuGroup);
+
+        MenuProduct menuProduct = new MenuProduct(menu, savedProduct, 10);
+
         List<MenuProduct> menuProducts = new ArrayList<>();
         menuProducts.add(menuProduct);
-
-        Menu menu = new Menu();
-        menu.setName("떡볶이");
-        menu.setPrice(BigDecimal.valueOf(3000));
-        menu.setMenuGroupId(savedMenuGroup.getId());
-        menu.setMenuProducts(menuProducts);
+        menu.addAllMenuProducts(menuProducts);
         Menu savedMenu = postMenu(menu).as(Menu.class);
 
-        OrderLineItem orderLineItem = new OrderLineItem();
-        orderLineItem.setSeq(1L);
-        orderLineItem.setQuantity(5);
-        orderLineItem.setMenuId(savedMenu.getId());
+        OrderLineItem orderLineItem = new OrderLineItem(1L, order, savedMenu, 5);
         List<OrderLineItem> orderLineItems = new ArrayList<>();
         orderLineItems.add(orderLineItem);
 
-        OrderTable orderTable = new OrderTable();
-        orderTable.setEmpty(false);
+        OrderTable orderTable = new OrderTable(null, 0, false);
         OrderTable savedOrderTable = postOrderTable(orderTable).as(OrderTable.class);
 
-        order = new Order();
-        order.setOrderStatus(OrderStatus.COOKING.name());
-        order.setOrderedTime(LocalDateTime.now());
-        order.setOrderLineItems(orderLineItems);
-        order.setOrderTableId(savedOrderTable.getId());
+        order = new Order(savedOrderTable, OrderStatus.COOKING.name(), LocalDateTime.now());
+        order.addAllOrderLineItems(orderLineItems);
     }
 
     @Test
@@ -93,13 +79,9 @@ class OrderRestControllerTest extends ControllerTest {
     @DisplayName("Order 상태 변경")
     void changeOrderStatus() {
         Order savedOrder = postOrder(order).as(Order.class);
-        Order changeOrder = new Order();
-        changeOrder.setOrderStatus(OrderStatus.MEAL.name());
-        changeOrder.setOrderedTime(savedOrder.getOrderedTime());
-        changeOrder.setOrderLineItems(savedOrder.getOrderLineItems());
-        changeOrder.setOrderTableId(savedOrder.getOrderTableId());
+        savedOrder.changeOrderStatus(OrderStatus.MEAL.name());
 
-        ExtractableResponse<Response> response = putOrderStatus(savedOrder.getId(), changeOrder);
+        ExtractableResponse<Response> response = putOrderStatus(savedOrder.getId(), savedOrder);
         Order changedOrder = response.as(Order.class);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());

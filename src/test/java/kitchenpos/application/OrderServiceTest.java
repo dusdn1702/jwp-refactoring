@@ -1,6 +1,9 @@
 package kitchenpos.application;
 
-import kitchenpos.dao.*;
+import kitchenpos.dao.JpaMenuDao;
+import kitchenpos.dao.JpaOrderDao;
+import kitchenpos.dao.JpaOrderLineItemDao;
+import kitchenpos.dao.JpaOrderTableDao;
 import kitchenpos.domain.Order;
 import kitchenpos.domain.OrderLineItem;
 import kitchenpos.domain.OrderStatus;
@@ -41,12 +44,9 @@ class OrderServiceTest extends ServiceTest {
     @Test
     @DisplayName("주문을 생성한다.")
     void create() {
-        Order savedOrder = new Order();
-        savedOrder.setId(1L);
-        savedOrder.setOrderStatus(OrderStatus.COOKING.name());
-        savedOrder.setOrderedTime(LocalDateTime.now());
-        savedOrder.setOrderTableId(1L);
-        savedOrder.setOrderLineItems(orderLineItems);
+
+        Order savedOrder = new Order(1L, orderTable, OrderStatus.COOKING.name(), LocalDateTime.now());
+        savedOrder.addAllOrderLineItems(orderLineItems);
 
         when(menuDao.countByIdIn(anyList()))
                 .thenReturn(1L);
@@ -66,7 +66,7 @@ class OrderServiceTest extends ServiceTest {
     @Test
     @DisplayName("주문에 주문항목이 존재하지 않으면 에러가 발생한다.")
     void createExceptionEmptyOrderLineItems() {
-        order.setOrderLineItems(Collections.emptyList());
+        order.addAllOrderLineItems(Collections.emptyList());
 
         assertThatThrownBy(() -> orderService.create(order))
                 .isInstanceOf(KitchenposException.class)
@@ -104,7 +104,7 @@ class OrderServiceTest extends ServiceTest {
                 .thenReturn(1L);
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.of(orderTable));
-        orderTable.setEmpty(true);
+        orderTable.makeEmpty(true);
 
         assertThatThrownBy(() -> orderService.create(order))
                 .isInstanceOf(KitchenposException.class)
@@ -114,12 +114,8 @@ class OrderServiceTest extends ServiceTest {
     @Test
     @DisplayName("모든 주문을 조회한다.")
     void list() {
-        Order order1 = new Order();
-        order1.setId(2L);
-        order1.setOrderStatus(OrderStatus.COOKING.name());
-        order1.setOrderedTime(LocalDateTime.now());
-        order1.setOrderTableId(1L);
-        order1.setOrderLineItems(orderLineItems);
+        Order order1 = new Order(2L, orderTable, OrderStatus.COOKING.name(), LocalDateTime.now());
+        order1.addAllOrderLineItems(orderLineItems);
 
         List<Order> orders = new ArrayList<>();
         orders.add(order);
@@ -138,39 +134,29 @@ class OrderServiceTest extends ServiceTest {
     @Test
     @DisplayName("주문의 상태를 변경한다.")
     void changeOrderStatus() {
-        Order completeOrder = new Order();
-        completeOrder.setId(order.getId());
-        completeOrder.setOrderStatus(OrderStatus.COMPLETION.name());
-        completeOrder.setOrderedTime(order.getOrderedTime());
-        completeOrder.setOrderTableId(order.getOrderTableId());
-        completeOrder.setOrderLineItems(order.getOrderLineItems());
+        order.changeOrderStatus(OrderStatus.COMPLETION.name());
 
         when(orderDao.findById(anyLong()))
                 .thenReturn(Optional.of(order));
         when(orderDao.save(any(Order.class)))
-                .thenReturn(completeOrder);
+                .thenReturn(order);
         when(orderLineItemDao.findAllByOrder_Id(anyLong()))
                 .thenReturn(orderLineItems);
 
-        Order actual = orderService.changeOrderStatus(1L, completeOrder);
+        Order actual = orderService.changeOrderStatus(1L, order);
         assertThat(actual.getOrderStatus()).isEqualTo(OrderStatus.COMPLETION.name());
         assertThat(actual).usingRecursiveComparison()
-                .isEqualTo(completeOrder);
+                .isEqualTo(order);
     }
 
     @Test
     @DisplayName("주문이 올바르지 않으면 에러가 발생한다.")
     void changeOrderStatusExceptionIllegalOrder() {
-        Order completeOrder = new Order();
-        completeOrder.setId(order.getId());
-        completeOrder.setOrderStatus(OrderStatus.COMPLETION.name());
-        completeOrder.setOrderedTime(order.getOrderedTime());
-        completeOrder.setOrderTableId(order.getOrderTableId());
-        completeOrder.setOrderLineItems(order.getOrderLineItems());
+        order.changeOrderStatus(OrderStatus.COMPLETION.name());
 
         when(orderDao.findById(anyLong()))
                 .thenReturn(Optional.empty());
-        assertThatThrownBy(() -> orderService.changeOrderStatus(1L, completeOrder))
+        assertThatThrownBy(() -> orderService.changeOrderStatus(1L, order))
                 .isInstanceOf(KitchenposException.class)
                 .hasMessage(ILLEGAL_ORDER_ID);
     }
@@ -178,7 +164,7 @@ class OrderServiceTest extends ServiceTest {
     @Test
     @DisplayName("변경하고자 하는 상태가 완료되면 에러가 발생한다.")
     void changeOrderStatusExceptionSameStatus() {
-        order.setOrderStatus(OrderStatus.COMPLETION.name());
+        order.changeOrderStatus(OrderStatus.COMPLETION.name());
 
         when(orderDao.findById(anyLong()))
                 .thenReturn(Optional.of(order));

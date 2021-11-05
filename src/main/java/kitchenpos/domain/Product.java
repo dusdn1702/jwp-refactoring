@@ -16,6 +16,20 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price;
 
+    protected Product() {
+
+    }
+
+    public Product(String name, BigDecimal price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    public Product(Long id, String name, BigDecimal price) {
+        this(name, price);
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }

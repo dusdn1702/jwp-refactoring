@@ -65,10 +65,7 @@ class ProductServiceTest extends ServiceTest {
     @Test
     @DisplayName("모든 상품을 조회한다.")
     void list() {
-        Product product2 = new Product();
-        product2.setId(2L);
-        product2.setName("단무지");
-        product2.setPrice(BigDecimal.valueOf(100));
+        Product product2 = new Product(2L, "단무지", BigDecimal.valueOf(100));
 
         List<Product> products = new ArrayList<>();
         products.add(product);

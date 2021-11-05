@@ -19,35 +19,46 @@ public class OrderTable {
     @Column(nullable = false)
     private boolean empty;
 
-    public Long getId() {
-        return id;
+    protected OrderTable() {
     }
 
-    public void setId(final Long id) {
+    public OrderTable(TableGroup tableGroup, int numberOfGuests, boolean empty) {
+        this.tableGroup = tableGroup;
+        this.numberOfGuests = numberOfGuests;
+        this.empty = empty;
+    }
+
+    public OrderTable(Long id, TableGroup tableGroup, int numberOfGuests, boolean empty) {
+        this(tableGroup, numberOfGuests, empty);
         this.id = id;
+    }
+
+    public void makeTableGroup(TableGroup tableGroup) {
+        this.tableGroup = tableGroup;
+        makeEmpty(false);
+    }
+
+    public void makeEmpty(boolean empty) {
+        this.empty = empty;
+    }
+
+    public void changeNumberOfGuests(int numberOfGuests) {
+        this.numberOfGuests = numberOfGuests;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Long getTableGroupId() {
         return tableGroup.getId();
     }
 
-    public void setTableGroupId(final Long tableGroupId) {
-        this.tableGroup.setId(tableGroupId);
-    }
-
     public int getNumberOfGuests() {
         return numberOfGuests;
     }
 
-    public void setNumberOfGuests(final int numberOfGuests) {
-        this.numberOfGuests = numberOfGuests;
-    }
-
     public boolean isEmpty() {
         return empty;
-    }
-
-    public void setEmpty(final boolean empty) {
-        this.empty = empty;
     }
 }

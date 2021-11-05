@@ -20,35 +20,38 @@ public class MenuProduct {
     @Column(nullable = false)
     private long quantity;
 
+    protected MenuProduct() {
+
+    }
+
+    public MenuProduct(Long seq, Menu menu, Product product, long quantity) {
+        this(menu, product, quantity);
+        this.seq = seq;
+    }
+
+    public MenuProduct(Menu menu, Product product, long quantity) {
+        this.menu = menu;
+        this.product = product;
+        this.quantity = quantity;
+    }
+
+    public void makeMenu(Menu menu) {
+        this.menu = menu;
+    }
+
     public Long getSeq() {
         return seq;
     }
 
-    public void setSeq(final Long seq) {
-        this.seq = seq;
+    public Menu getMenu() {
+        return menu;
     }
 
-    public Long getMenuId() {
-        return menu.getId();
-    }
-
-    public void setMenuId(final Long menuId) {
-        this.menu.setId(menuId);
-    }
-
-    public Long getProductId() {
-        return product.getId();
-    }
-
-    public void setProductId(final Long productId) {
-        this.product.setId(productId);
+    public Product getProduct() {
+        return product;
     }
 
     public long getQuantity() {
         return quantity;
-    }
-
-    public void setQuantity(final long quantity) {
-        this.quantity = quantity;
     }
 }

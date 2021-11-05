@@ -34,37 +34,11 @@ class TableGroupServiceTest extends ServiceTest {
     @Mock
     private JpaTableGroupDao tableGroupDao;
 
-    private TableGroup tableGroup;
-    private final List<OrderTable> orderTables = new ArrayList<>();
-
-    @BeforeEach
-    void setUp() {
-        tableGroup = new TableGroup();
-        tableGroup.setId(1L);
-        tableGroup.setCreatedDate(LocalDateTime.now());
-
-        orderTable = new OrderTable();
-        orderTable.setId(1L);
-        orderTable.setEmpty(true);
-        orderTable.setTableGroupId(null);
-        orderTable.setNumberOfGuests(3);
-
-        orderTable2 = new OrderTable();
-        orderTable2.setId(2L);
-        orderTable2.setEmpty(true);
-        orderTable2.setTableGroupId(null);
-        orderTable2.setNumberOfGuests(6);
-
-        orderTables.add(orderTable);
-        orderTables.add(orderTable2);
-        tableGroup.setOrderTables(orderTables);
-    }
-
     @Test
     @DisplayName("테이블 그룹을 생성한다.")
     void create() {
         when(orderTableDao.findAllByIdIn(anyList()))
-                .thenReturn(orderTables);
+                .thenReturn(tableGroup.getOrderTables());
         when(tableGroupDao.save(any(TableGroup.class)))
                 .thenReturn(tableGroup);
 
@@ -77,12 +51,12 @@ class TableGroupServiceTest extends ServiceTest {
     @Test
     @DisplayName("테이블 그룹 내 테이블이 비어있거나 2개 미만이면 에러가 발생한다.")
     void createExceptionTableLessThanTwo() {
-        tableGroup.setOrderTables(Collections.emptyList());
+        tableGroup.addAllOrderTables(Collections.emptyList());
         assertThatThrownBy(() -> tableGroupService.create(tableGroup))
                 .isInstanceOf(KitchenposException.class)
                 .hasMessage(ILLEGAL_TABLE_SIZE_MINIMUM);
 
-        tableGroup.setOrderTables(Collections.singletonList(orderTable));
+        tableGroup.addAllOrderTables(Collections.singletonList(orderTable));
         assertThatThrownBy(() -> tableGroupService.create(tableGroup))
                 .isInstanceOf(KitchenposException.class)
                 .hasMessage(ILLEGAL_TABLE_SIZE_MINIMUM);
@@ -106,9 +80,9 @@ class TableGroupServiceTest extends ServiceTest {
     @Test
     @DisplayName("테이블 그룹 내 테이블이 비어있지 않으면 에러가 발생한다.")
     void createExceptionTableEmpty() {
-        orderTable.setEmpty(false);
+        orderTable.makeEmpty(false);
         when(orderTableDao.findAllByIdIn(anyList()))
-                .thenReturn(orderTables);
+                .thenReturn(tableGroup.getOrderTables());
 
         assertThatThrownBy(() -> tableGroupService.create(tableGroup))
                 .isInstanceOf(KitchenposException.class)
@@ -118,9 +92,9 @@ class TableGroupServiceTest extends ServiceTest {
     @Test
     @DisplayName("테이블 그룹 내 테이블이 그룹에 속해있으면 에러가 발생한다.")
     void createExceptionTableInGroup() {
-        orderTable.setTableGroupId(1L);
+        orderTable.makeTableGroup(null);
         when(orderTableDao.findAllByIdIn(anyList()))
-                .thenReturn(orderTables);
+                .thenReturn(tableGroup.getOrderTables());
 
         assertThatThrownBy(() -> tableGroupService.create(tableGroup))
                 .isInstanceOf(KitchenposException.class)
@@ -130,13 +104,8 @@ class TableGroupServiceTest extends ServiceTest {
     @Test
     @DisplayName("테이블 그룹을 해제하고 테이블을 비운다.")
     void ungroup() {
-        orderTable.setTableGroupId(1L);
-        orderTable.setEmpty(false);
-        orderTable2.setTableGroupId(1L);
-        orderTable2.setEmpty(false);
-
         when(orderTableDao.findAllByTableGroup_Id(anyLong()))
-                .thenReturn(orderTables);
+                .thenReturn(tableGroup.getOrderTables());
         when(orderDao.existsByOrderTableIdInAndOrderStatusIn(anyList(), anyList()))
                 .thenReturn(false);
 
@@ -150,13 +119,8 @@ class TableGroupServiceTest extends ServiceTest {
     @Test
     @DisplayName("식사가 완료되지 않았거나 주문이 있는 테이블은 에러가 발생한다.")
     void ungroupExceptionStatus() {
-        orderTable.setTableGroupId(1L);
-        orderTable.setEmpty(false);
-        orderTable2.setTableGroupId(1L);
-        orderTable2.setEmpty(false);
-
         when(orderTableDao.findAllByTableGroup_Id(anyLong()))
-                .thenReturn(orderTables);
+                .thenReturn(tableGroup.getOrderTables());
         when(orderDao.existsByOrderTableIdInAndOrderStatusIn(anyList(), anyList()))
                 .thenReturn(true);
 

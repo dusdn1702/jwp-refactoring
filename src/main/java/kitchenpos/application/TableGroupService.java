@@ -53,17 +53,16 @@ public class TableGroupService {
             }
         }
 
-        tableGroup.setCreatedDate(LocalDateTime.now());
+        tableGroup.tableCreatedAt(LocalDateTime.now());
 
         final TableGroup savedTableGroup = tableGroupDao.save(tableGroup);
 
-        final Long tableGroupId = savedTableGroup.getId();
-        for (final OrderTable savedOrderTable : savedOrderTables) {
-            savedOrderTable.setTableGroupId(tableGroupId);
-            savedOrderTable.setEmpty(false);
+        for (OrderTable savedOrderTable : savedOrderTables) {
+            savedOrderTable.makeTableGroup(tableGroup);
+            savedOrderTable = new OrderTable(savedTableGroup, savedOrderTable.getNumberOfGuests(), savedOrderTable.isEmpty());
             orderTableDao.save(savedOrderTable);
         }
-        savedTableGroup.setOrderTables(savedOrderTables);
+        savedTableGroup.addAllOrderTables(savedOrderTables);
 
         return savedTableGroup;
     }
@@ -82,8 +81,7 @@ public class TableGroupService {
         }
 
         for (final OrderTable orderTable : orderTables) {
-            orderTable.setTableGroupId(null);
-            orderTable.setEmpty(false);
+            orderTable.makeTableGroup(null);
             orderTableDao.save(orderTable);
         }
     }

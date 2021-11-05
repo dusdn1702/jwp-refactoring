@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static kitchenpos.domain.OrderStatus.COOKING;
 import static kitchenpos.exception.KitchenposException.*;
 
 @Service
@@ -53,28 +54,23 @@ public class OrderService {
             throw new KitchenposException(ILLEGAL_ITEM_SIZE);
         }
 
-        order.setId(null);
-
-        final OrderTable orderTable = orderTableDao.findById(order.getOrderTableId())
-                .orElseThrow(() -> new KitchenposException(ILLEGAL_ORDER_TABLE_ID));
+        final OrderTable orderTable = order.getOrderTable();
 
         if (orderTable.isEmpty()) {
             throw new KitchenposException(EMPTY_ORDER_TABLE);
         }
 
-        order.setOrderTableId(orderTable.getId());
-        order.setOrderStatus(OrderStatus.COOKING.name());
-        order.setOrderedTime(LocalDateTime.now());
+        order.makeOrderIn(orderTable, COOKING, LocalDateTime.now());
 
-        final Order savedOrder = orderDao.save(order);
+        Order savedOrder = orderDao.save(order);
 
-        final Long orderId = savedOrder.getId();
         final List<OrderLineItem> savedOrderLineItems = new ArrayList<>();
-        for (final OrderLineItem orderLineItem : orderLineItems) {
-            orderLineItem.setOrderId(orderId);
-            savedOrderLineItems.add(orderLineItemDao.save(orderLineItem));
+        for (OrderLineItem orderLineItem : orderLineItems) {
+            orderLineItem.linkOrder(savedOrder);
+            OrderLineItem savedOrderLineItem = orderLineItemDao.save(orderLineItem);
+            savedOrderLineItems.add(savedOrderLineItem);
         }
-        savedOrder.setOrderLineItems(savedOrderLineItems);
+        savedOrder.addAllOrderLineItems(savedOrderLineItems);
 
         return savedOrder;
     }
@@ -83,7 +79,7 @@ public class OrderService {
         final List<Order> orders = orderDao.findAll();
 
         for (final Order order : orders) {
-            order.setOrderLineItems(orderLineItemDao.findAllByOrder_Id(order.getId()));
+            order.addAllOrderLineItems(orderLineItemDao.findAllByOrder_Id(order.getId()));
         }
 
         return orders;
@@ -99,11 +95,11 @@ public class OrderService {
         }
 
         final OrderStatus orderStatus = OrderStatus.valueOf(order.getOrderStatus());
-        savedOrder.setOrderStatus(orderStatus.name());
+        savedOrder.changeOrderStatus(orderStatus.name());
 
         orderDao.save(savedOrder);
 
-        savedOrder.setOrderLineItems(orderLineItemDao.findAllByOrder_Id(orderId));
+        savedOrder.addAllOrderLineItems(orderLineItemDao.findAllByOrder_Id(orderId));
 
         return savedOrder;
     }

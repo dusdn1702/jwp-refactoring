@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,60 +26,37 @@ class ServiceTest {
     protected OrderTable orderTable;
     protected OrderTable orderTable2;
 
+    protected TableGroup tableGroup;
+
     @BeforeEach
     void setUp() {
-        menuGroup = new MenuGroup();
-        menuGroup.setName("분식");
-        menuGroup.setId(1L);
+        menuGroup = new MenuGroup(1L, "분식");
 
-        product = new Product();
-        product.setPrice(BigDecimal.valueOf(1000L));
-        product.setName("어묵");
-        product.setId(1L);
+        menu = new Menu(1L, "떡볶이", BigDecimal.valueOf(2000L), menuGroup);
 
-        menu = new Menu();
-        menu.setName("떡볶이");
-        menu.setId(1L);
+        product = new Product(1L, "어묵", BigDecimal.valueOf(1000L));
 
-        menuProduct = new MenuProduct();
-        menuProduct.setMenuId(menu.getId());
-        menuProduct.setProductId(product.getId());
-        menuProduct.setSeq(1L);
-        menuProduct.setQuantity(100);
+        menuProduct = new MenuProduct(1L, menu, product, 100);
 
         menuProducts = new ArrayList<>();
         menuProducts.add(menuProduct);
 
-        menu.setMenuProducts(menuProducts);
-        menu.setPrice(BigDecimal.valueOf(2000.0));
-        menu.setMenuGroupId(menuGroup.getId());
+        menu.addAllMenuProducts(menuProducts);
 
-        orderLineItem = new OrderLineItem();
-        orderLineItem.setSeq(1L);
-        orderLineItem.setOrderId(1L);
-        orderLineItem.setMenuId(1L);
-        orderLineItem.setQuantity(10);
+        order = new Order(1L, orderTable, OrderStatus.COOKING.name(), LocalDateTime.now());
+        orderLineItem = new OrderLineItem(1L, order, menu, 10);
 
         orderLineItems = new ArrayList<>();
         orderLineItems.add(orderLineItem);
 
-        order = new Order();
-        order.setId(1L);
-        order.setOrderStatus(OrderStatus.COOKING.name());
-        order.setOrderedTime(LocalDateTime.now());
-        order.setOrderTableId(1L);
-        order.setOrderLineItems(orderLineItems);
+        order.addAllOrderLineItems(orderLineItems);
 
-        orderTable = new OrderTable();
-        orderTable.setId(1L);
-        orderTable.setEmpty(false);
-        orderTable.setTableGroupId(1L);
-        orderTable.setNumberOfGuests(3);
+        tableGroup = new TableGroup(1L, LocalDateTime.now());
 
-        orderTable2 = new OrderTable();
-        orderTable2.setId(2L);
-        orderTable2.setEmpty(false);
-        orderTable2.setTableGroupId(1L);
-        orderTable2.setNumberOfGuests(6);
+        orderTable = new OrderTable(1L, tableGroup, 3, false);
+        orderTable2 = new OrderTable(2L, tableGroup, 6, false);
+
+        List<OrderTable> orderTables = new ArrayList<>(Arrays.asList(orderTable, orderTable2));
+        tableGroup.addAllOrderTables(orderTables);
     }
 }

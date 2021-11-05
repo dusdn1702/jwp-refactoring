@@ -9,6 +9,9 @@ public class OrderLineItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;
 
+    @Column(nullable = false)
+    private long quantity;
+
     @ManyToOne
     @JoinColumn(name = "order_id", foreignKey = @ForeignKey(name = "fk_order_line_item_orders"))
     private Order order;
@@ -17,39 +20,37 @@ public class OrderLineItem {
     @JoinColumn(name = "menu_id", foreignKey = @ForeignKey(name = "fk_order_line_item_menu"))
     private Menu menu;
 
-    @Column(nullable = false)
-    private long quantity;
+    protected OrderLineItem() {
+    }
+
+    public OrderLineItem(Order order, Menu menu, long quantity) {
+        this.order = order;
+        this.menu = menu;
+        this.quantity = quantity;
+    }
+
+    public OrderLineItem(Long seq, Order order, Menu menu, long quantity) {
+        this(order, menu, quantity);
+        this.seq = seq;
+    }
+
+    public void linkOrder(Order order) {
+        this.order = order;
+    }
 
     public Long getSeq() {
         return seq;
-    }
-
-    public void setSeq(final Long seq) {
-        this.seq = seq;
     }
 
     public Long getOrderId() {
         return order.getId();
     }
 
-    public void setOrderId(final Long orderId) {
-        this.order = new Order();
-        this.order.setId(orderId);
-    }
-
     public Long getMenuId() {
         return menu.getId();
     }
 
-    public void setMenuId(final Long menuId) {
-        this.menu.setId(menuId);
-    }
-
     public long getQuantity() {
         return quantity;
-    }
-
-    public void setQuantity(final long quantity) {
-        this.quantity = quantity;
     }
 }

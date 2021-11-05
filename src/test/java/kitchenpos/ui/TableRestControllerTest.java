@@ -11,23 +11,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
-import static kitchenpos.ui.TableGroupRestControllerTest.postTableGroup;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TableRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("OrderTable 생성")
     void create() {
-        TableGroup tableGroup = new TableGroup();
-        tableGroup.setCreatedDate(LocalDateTime.now());
-        tableGroup.setId(1L);
+        TableGroup tableGroup = new TableGroup(1L, LocalDateTime.now());
 
-        OrderTable orderTable = new OrderTable();
-        orderTable.setTableGroupId(tableGroup.getId());
-        orderTable.setEmpty(true);
+        OrderTable orderTable = new OrderTable(tableGroup, 0, true);
 
         ExtractableResponse<Response> response = postOrderTable(orderTable);
         OrderTable savedOrderTable = response.as(OrderTable.class);
@@ -39,12 +33,12 @@ class TableRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("모든 OrderTable 조회")
     void list() {
-        OrderTable orderTable = new OrderTable();
-        orderTable.setEmpty(true);
+        TableGroup tableGroup = new TableGroup(1L, LocalDateTime.now());
+
+        OrderTable orderTable = new OrderTable(tableGroup, 0, true);
         postOrderTable(orderTable);
 
-        OrderTable orderTable2 = new OrderTable();
-        orderTable2.setEmpty(true);
+        OrderTable orderTable2 = new OrderTable(tableGroup, 0, true);
         postOrderTable(orderTable2);
 
         ExtractableResponse<Response> response = getOrderTables();
@@ -56,15 +50,12 @@ class TableRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("빈 테이블로 변경")
     void changeEmpty() {
-        OrderTable orderTable = new OrderTable();
-        orderTable.setEmpty(false);
-        orderTable.setNumberOfGuests(3);
+        TableGroup tableGroup = new TableGroup(1L, LocalDateTime.now());
+
+        OrderTable orderTable = new OrderTable(tableGroup, 3, false);
         OrderTable savedOrderTable = postOrderTable(orderTable).as(OrderTable.class);
 
-        OrderTable changeTable = new OrderTable();
-        changeTable.setEmpty(true);
-        changeTable.setNumberOfGuests(3);
-
+        OrderTable changeTable = new OrderTable(tableGroup, 3, true);
         ExtractableResponse<Response> response = putOrderTableEmpty(savedOrderTable.getId(), changeTable);
         OrderTable changedTable = response.as(OrderTable.class);
 
@@ -75,15 +66,12 @@ class TableRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("테이블 손님 수 변경")
     void changeNumberOfGuests() {
-        OrderTable orderTable = new OrderTable();
-        orderTable.setEmpty(false);
-        orderTable.setNumberOfGuests(3);
+        TableGroup tableGroup = new TableGroup(1L, LocalDateTime.now());
+
+        OrderTable orderTable = new OrderTable(tableGroup, 3, false);
         OrderTable savedOrderTable = postOrderTable(orderTable).as(OrderTable.class);
 
-        OrderTable changeTable = new OrderTable();
-        changeTable.setEmpty(false);
-        changeTable.setNumberOfGuests(5);
-
+        OrderTable changeTable = new OrderTable(tableGroup, 5, false);
         ExtractableResponse<Response> response = putOrderTableGuest(savedOrderTable.getId(), changeTable);
         OrderTable changedTable = response.as(OrderTable.class);
 

@@ -24,26 +24,19 @@ class MenuRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("menu 생성")
     void create() {
-        MenuGroup menuGroup = new MenuGroup();
-        menuGroup.setName("분식");
+        MenuGroup menuGroup = new MenuGroup("분식");
         MenuGroup savedMenuGroup = postMenuGroup(menuGroup).as(MenuGroup.class);
 
-        Product product = new Product();
-        product.setName("떡볶이");
-        product.setPrice(BigDecimal.valueOf(10000));
+        Product product = new Product("떡볶이", BigDecimal.valueOf(10000));
         Product savedProduct = postProduct(product).as(Product.class);
 
-        MenuProduct menuProduct = new MenuProduct();
-        menuProduct.setQuantity(10);
-        menuProduct.setProductId(savedProduct.getId());
+        Menu menu = new Menu("떡볶이", BigDecimal.valueOf(3000), savedMenuGroup);
+
+        MenuProduct menuProduct = new MenuProduct(menu, savedProduct, 10);
+
         List<MenuProduct> menuProducts = new ArrayList<>();
         menuProducts.add(menuProduct);
-
-        Menu menu = new Menu();
-        menu.setName("떡볶이");
-        menu.setPrice(BigDecimal.valueOf(3000));
-        menu.setMenuGroupId(savedMenuGroup.getId());
-        menu.setMenuProducts(menuProducts);
+        menu.addAllMenuProducts(menuProducts);
 
         ExtractableResponse<Response> response = postMenu(menu);
         Menu savedMenu = response.as(Menu.class);

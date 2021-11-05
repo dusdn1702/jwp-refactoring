@@ -17,8 +17,7 @@ class MenuGroupRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("menu group 생성")
     void create() {
-        MenuGroup menuGroup = new MenuGroup();
-        menuGroup.setName("분식");
+        MenuGroup menuGroup = new MenuGroup("분식");
 
         ExtractableResponse<Response> response = postMenuGroup(menuGroup);
         MenuGroup savedMenuGroup = response.as(MenuGroup.class);
@@ -30,12 +29,10 @@ class MenuGroupRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("모든 menu group 조회")
     void list() {
-        MenuGroup menuGroup = new MenuGroup();
-        menuGroup.setName("분식");
+        MenuGroup menuGroup = new MenuGroup("분식");
         postMenuGroup(menuGroup);
 
-        MenuGroup menuGroup1 = new MenuGroup();
-        menuGroup1.setName("양식");
+        MenuGroup menuGroup1 = new MenuGroup("양식");
         postMenuGroup(menuGroup1);
 
         ExtractableResponse<Response> response = getMenuGroups();

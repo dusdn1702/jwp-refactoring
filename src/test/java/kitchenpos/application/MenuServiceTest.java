@@ -113,7 +113,7 @@ class MenuServiceTest extends ServiceTest {
     void createExceptionImpossibleSum(int menuPrice, int productPrice, int quantity) {
         menu.setPrice(BigDecimal.valueOf(menuPrice));
         product.setPrice(BigDecimal.valueOf(productPrice));
-        menuProduct.setQuantity(quantity);
+        menuProduct = new MenuProduct(menuProduct.getSeq(), menuProduct.getMenu(), menuProduct.getProduct(), quantity);
 
         when(menuGroupDao.existsById(anyLong()))
                 .thenReturn(true);
@@ -128,20 +128,13 @@ class MenuServiceTest extends ServiceTest {
     @Test
     @DisplayName("모든 메뉴를 조회한다.")
     void list() {
-        Menu menu2 = new Menu();
-        menu2.setName("순대");
+        Menu menu2 = new Menu(2L, "순대", BigDecimal.valueOf(3000.0), menuGroup);
         menu2.setId(2L);
 
-        MenuProduct menuProduct2 = new MenuProduct();
-        menuProduct2.setMenuId(menu2.getId());
-        menuProduct2.setProductId(2L);
-        menuProduct2.setSeq(2L);
-        menuProduct2.setQuantity(100);
+        MenuProduct menuProduct2 = new MenuProduct(2L, menu2, product, 100);
         menuProducts.add(menuProduct2);
 
-        menu2.setMenuProducts(menuProducts);
-        menu2.setPrice(BigDecimal.valueOf(3000.0));
-        menu2.setMenuGroupId(menuGroup.getId());
+        menu2.addAllMenuProducts(menuProducts);
 
         List<Menu> menus = new ArrayList<>();
         menus.add(menu);
