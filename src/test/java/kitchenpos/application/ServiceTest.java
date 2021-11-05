@@ -43,6 +43,11 @@ class ServiceTest {
 
         menu.addAllMenuProducts(menuProducts);
 
+        tableGroup = new TableGroup(1L, LocalDateTime.now());
+
+        orderTable = new OrderTable(1L, tableGroup, 3, false);
+        orderTable2 = new OrderTable(2L, tableGroup, 6, false);
+
         order = new Order(1L, orderTable, OrderStatus.COOKING.name(), LocalDateTime.now());
         orderLineItem = new OrderLineItem(1L, order, menu, 10);
 
@@ -50,11 +55,6 @@ class ServiceTest {
         orderLineItems.add(orderLineItem);
 
         order.addAllOrderLineItems(orderLineItems);
-
-        tableGroup = new TableGroup(1L, LocalDateTime.now());
-
-        orderTable = new OrderTable(1L, tableGroup, 3, false);
-        orderTable2 = new OrderTable(2L, tableGroup, 6, false);
 
         List<OrderTable> orderTables = new ArrayList<>(Arrays.asList(orderTable, orderTable2));
         tableGroup.addAllOrderTables(orderTables);

@@ -38,20 +38,14 @@ class OrderServiceTest extends ServiceTest {
     @Mock
     private JpaOrderLineItemDao orderLineItemDao;
 
-    @Mock
-    private JpaOrderTableDao orderTableDao;
-
     @Test
     @DisplayName("주문을 생성한다.")
     void create() {
-
         Order savedOrder = new Order(1L, orderTable, OrderStatus.COOKING.name(), LocalDateTime.now());
         savedOrder.addAllOrderLineItems(orderLineItems);
 
         when(menuDao.countByIdIn(anyList()))
                 .thenReturn(1L);
-        when(orderTableDao.findById(anyLong()))
-                .thenReturn(Optional.of(orderTable));
         when(orderDao.save(any(Order.class)))
                 .thenReturn(savedOrder);
         when(orderLineItemDao.save(any(OrderLineItem.class)))
@@ -85,25 +79,10 @@ class OrderServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("주문테이블이 존재하지 않으면 에러가 발생한다.")
-    void createExceptionExistOrderTable() {
-        when(menuDao.countByIdIn(anyList()))
-                .thenReturn(1L);
-        when(orderTableDao.findById(anyLong()))
-                .thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> orderService.create(order))
-                .isInstanceOf(KitchenposException.class)
-                .hasMessage(ILLEGAL_ORDER_TABLE_ID);
-    }
-
-    @Test
     @DisplayName("주문테이블이 비어있으면 에러가 발생한다.")
     void createExceptionEmptyOrderTable() {
         when(menuDao.countByIdIn(anyList()))
                 .thenReturn(1L);
-        when(orderTableDao.findById(anyLong()))
-                .thenReturn(Optional.of(orderTable));
         orderTable.makeEmpty(true);
 
         assertThatThrownBy(() -> orderService.create(order))
@@ -134,16 +113,16 @@ class OrderServiceTest extends ServiceTest {
     @Test
     @DisplayName("주문의 상태를 변경한다.")
     void changeOrderStatus() {
-        order.changeOrderStatus(OrderStatus.COMPLETION.name());
+        Order anotherOrder = new Order(order.getId(), order.getOrderTable(), OrderStatus.COMPLETION.name(), order.getOrderedTime());
 
         when(orderDao.findById(anyLong()))
                 .thenReturn(Optional.of(order));
         when(orderDao.save(any(Order.class)))
-                .thenReturn(order);
+                .thenReturn(anotherOrder);
         when(orderLineItemDao.findAllByOrder_Id(anyLong()))
                 .thenReturn(orderLineItems);
 
-        Order actual = orderService.changeOrderStatus(1L, order);
+        Order actual = orderService.changeOrderStatus(order.getId(), anotherOrder);
         assertThat(actual.getOrderStatus()).isEqualTo(OrderStatus.COMPLETION.name());
         assertThat(actual).usingRecursiveComparison()
                 .isEqualTo(order);

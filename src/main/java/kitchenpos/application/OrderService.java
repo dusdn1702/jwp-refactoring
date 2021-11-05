@@ -24,18 +24,15 @@ public class OrderService {
     private final JpaMenuDao menuDao;
     private final JpaOrderDao orderDao;
     private final JpaOrderLineItemDao orderLineItemDao;
-    private final JpaOrderTableDao orderTableDao;
 
     public OrderService(
             final JpaMenuDao menuDao,
             final JpaOrderDao orderDao,
-            final JpaOrderLineItemDao orderLineItemDao,
-            final JpaOrderTableDao orderTableDao
+            final JpaOrderLineItemDao orderLineItemDao
     ) {
         this.menuDao = menuDao;
         this.orderDao = orderDao;
         this.orderLineItemDao = orderLineItemDao;
-        this.orderTableDao = orderTableDao;
     }
 
     @Transactional
