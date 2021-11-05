@@ -20,18 +20,15 @@ public class MenuService {
     private final JpaMenuDao menuDao;
     private final JpaMenuGroupDao menuGroupDao;
     private final JpaMenuProductDao menuProductDao;
-    private final JpaProductDao productDao;
 
     public MenuService(
             final JpaMenuDao menuDao,
             final JpaMenuGroupDao menuGroupDao,
-            final JpaMenuProductDao menuProductDao,
-            final JpaProductDao productDao
+            final JpaMenuProductDao menuProductDao
     ) {
         this.menuDao = menuDao;
         this.menuGroupDao = menuGroupDao;
         this.menuProductDao = menuProductDao;
-        this.productDao = productDao;
     }
 
     @Transactional
@@ -42,7 +39,7 @@ public class MenuService {
             throw new KitchenposException(ILLEGAL_PRICE);
         }
 
-        if (!menuGroupDao.existsById(menu.getMenuGroupId())) {
+        if (!menuGroupDao.existsById(menu.getMenuGroup().getId())) {
             throw new KitchenposException(ILLEGAL_MENU_GROUP_ID);
         }
 

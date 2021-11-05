@@ -30,10 +30,13 @@ class MenuRestControllerTest extends ControllerTest {
         Product product = new Product("떡볶이", BigDecimal.valueOf(10000));
         Product savedProduct = postProduct(product).as(Product.class);
 
-        Menu menu = new Menu("떡볶이", BigDecimal.valueOf(3000), savedMenuGroup);
+        Menu menu = new Menu(
+                "떡볶이",
+                BigDecimal.valueOf(3000),
+                savedMenuGroup,
+                null);
 
         MenuProduct menuProduct = new MenuProduct(menu, savedProduct, 10);
-
         List<MenuProduct> menuProducts = new ArrayList<>();
         menuProducts.add(menuProduct);
         menu.addAllMenuProducts(menuProducts);

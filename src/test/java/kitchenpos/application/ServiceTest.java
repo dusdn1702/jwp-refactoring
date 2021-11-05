@@ -32,12 +32,11 @@ class ServiceTest {
     void setUp() {
         menuGroup = new MenuGroup(1L, "분식");
 
-        menu = new Menu(1L, "떡볶이", BigDecimal.valueOf(2000L), menuGroup);
+        menu = new Menu(1L, "떡볶이", BigDecimal.valueOf(2000L), menuGroup, null);
 
         product = new Product(1L, "어묵", BigDecimal.valueOf(1000L));
 
         menuProduct = new MenuProduct(1L, menu, product, 100);
-
         menuProducts = new ArrayList<>();
         menuProducts.add(menuProduct);
 

@@ -1,8 +1,11 @@
 package kitchenpos.application;
 
-import kitchenpos.dao.*;
+import kitchenpos.dao.JpaMenuDao;
+import kitchenpos.dao.JpaMenuGroupDao;
+import kitchenpos.dao.JpaMenuProductDao;
 import kitchenpos.domain.Menu;
 import kitchenpos.domain.MenuProduct;
+import kitchenpos.domain.Product;
 import kitchenpos.exception.KitchenposException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,9 +18,9 @@ import org.mockito.Mock;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static kitchenpos.exception.KitchenposException.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,19 +38,15 @@ class MenuServiceTest extends ServiceTest {
 
     @Mock
     private JpaMenuDao menuDao;
-    @Mock
-    private JpaMenuProductDao menuProductDao;
 
     @Mock
-    private JpaProductDao productDao;
+    private JpaMenuProductDao menuProductDao;
 
     @Test
     @DisplayName("올바르게 메뉴 생성 요청이 들어오면 수행된다.")
     void create() {
         when(menuGroupDao.existsById(anyLong()))
                 .thenReturn(true);
-        when(productDao.findById(anyLong()))
-                .thenReturn(Optional.of(product));
         when(menuProductDao.save(any(MenuProduct.class)))
                 .thenReturn(menuProduct);
         when(menuDao.save(any(Menu.class)))
@@ -64,9 +63,14 @@ class MenuServiceTest extends ServiceTest {
     @ValueSource(ints = {-1, -1000})
     @DisplayName("메뉴의 가격이 0보다 작으면 예외가 발생한다.")
     void createExceptionMinusPrice(Integer price) {
-        menu.setPrice(BigDecimal.valueOf(price));
+        Menu anotherMenu = new Menu(
+                menu.getId(),
+                menu.getName(),
+                BigDecimal.valueOf(price),
+                menu.getMenuGroup(),
+                menu.getMenuProducts());
 
-        assertThatThrownBy(() -> menuService.create(menu))
+        assertThatThrownBy(() -> menuService.create(anotherMenu))
                 .isInstanceOf(KitchenposException.class)
                 .hasMessage(ILLEGAL_PRICE);
     }
@@ -75,9 +79,14 @@ class MenuServiceTest extends ServiceTest {
     @NullSource
     @DisplayName("메뉴의 가격이 없으면 예외가 발생한다.")
     void createExceptionEmptyPrice(BigDecimal price) {
-        menu.setPrice(price);
+        Menu anotherMenu = new Menu(
+                menu.getId(),
+                menu.getName(),
+                price,
+                menu.getMenuGroup(),
+                menu.getMenuProducts());
 
-        assertThatThrownBy(() -> menuService.create(menu))
+        assertThatThrownBy(() -> menuService.create(anotherMenu))
                 .isInstanceOf(KitchenposException.class)
                 .hasMessage(ILLEGAL_PRICE);
     }
@@ -93,34 +102,25 @@ class MenuServiceTest extends ServiceTest {
                 .hasMessage(ILLEGAL_MENU_GROUP_ID);
     }
 
-    @Test
-    @DisplayName("메뉴의 상품이 존재하지 않으면 예외가 발생한다.")
-    void createExceptionIllegalProductId() {
-        when(menuGroupDao.existsById(anyLong()))
-                .thenReturn(true);
-        when(productDao.findById(anyLong()))
-                .thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> menuService.create(menu))
-                .isInstanceOf(KitchenposException.class)
-                .hasMessage(ILLEGAL_PRODUCT_ID);
-    }
-
-
     @ParameterizedTest
     @CsvSource(value = {"10:1:9", "1000:100:5", "1000:1:10"}, delimiter = ':')
     @DisplayName("메뉴의 가격이 메뉴상품들의 총합보다 비싸면 예외가 발생한다.")
-    void createExceptionImpossibleSum(int menuPrice, int productPrice, int quantity) {
-        menu.setPrice(BigDecimal.valueOf(menuPrice));
-        product.setPrice(BigDecimal.valueOf(productPrice));
-        menuProduct = new MenuProduct(menuProduct.getSeq(), menuProduct.getMenu(), menuProduct.getProduct(), quantity);
+    void createExceptionImpossibleSum(long menuPrice, long productPrice, long quantity) {
+        product = new Product(product.getId(), product.getName(), BigDecimal.valueOf(productPrice));
+        MenuProduct anotherMenuProduct = new MenuProduct(menu, product, quantity);
+        menu.addAllMenuProducts(Collections.singletonList(anotherMenuProduct));
+
+        Menu anotherMenu = new Menu(
+                menu.getId(),
+                menu.getName(),
+                BigDecimal.valueOf(menuPrice),
+                menu.getMenuGroup(),
+                menu.getMenuProducts());
 
         when(menuGroupDao.existsById(anyLong()))
                 .thenReturn(true);
-        when(productDao.findById(anyLong()))
-                .thenReturn(Optional.of(product));
 
-        assertThatThrownBy(() -> menuService.create(menu))
+        assertThatThrownBy(() -> menuService.create(anotherMenu))
                 .isInstanceOf(KitchenposException.class)
                 .hasMessage(IMPOSSIBLE_MENU_PRICE);
     }
@@ -128,8 +128,12 @@ class MenuServiceTest extends ServiceTest {
     @Test
     @DisplayName("모든 메뉴를 조회한다.")
     void list() {
-        Menu menu2 = new Menu(2L, "순대", BigDecimal.valueOf(3000.0), menuGroup);
-        menu2.setId(2L);
+        Menu menu2 = new Menu(
+                2L,
+                "순대",
+                BigDecimal.valueOf(3000.0),
+                menuGroup,
+                menuProducts);
 
         MenuProduct menuProduct2 = new MenuProduct(2L, menu2, product, 100);
         menuProducts.add(menuProduct2);
