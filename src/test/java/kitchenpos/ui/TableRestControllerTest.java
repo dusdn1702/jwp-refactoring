@@ -19,9 +19,7 @@ class TableRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("OrderTable 생성")
     void create() {
-        TableGroup tableGroup = new TableGroup(1L, LocalDateTime.now());
-
-        OrderTable orderTable = new OrderTable(tableGroup, 0, true);
+        OrderTable orderTable = new OrderTable(null, 0, true);
 
         ExtractableResponse<Response> response = postOrderTable(orderTable);
         OrderTable savedOrderTable = response.as(OrderTable.class);
@@ -33,12 +31,10 @@ class TableRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("모든 OrderTable 조회")
     void list() {
-        TableGroup tableGroup = new TableGroup(1L, LocalDateTime.now());
-
-        OrderTable orderTable = new OrderTable(tableGroup, 0, true);
+        OrderTable orderTable = new OrderTable(null, 0, true);
         postOrderTable(orderTable);
 
-        OrderTable orderTable2 = new OrderTable(tableGroup, 0, true);
+        OrderTable orderTable2 = new OrderTable(null, 0, true);
         postOrderTable(orderTable2);
 
         ExtractableResponse<Response> response = getOrderTables();
@@ -50,12 +46,10 @@ class TableRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("빈 테이블로 변경")
     void changeEmpty() {
-        TableGroup tableGroup = new TableGroup(1L, LocalDateTime.now());
-
-        OrderTable orderTable = new OrderTable(tableGroup, 3, false);
+        OrderTable orderTable = new OrderTable(null, 3, false);
         OrderTable savedOrderTable = postOrderTable(orderTable).as(OrderTable.class);
 
-        OrderTable changeTable = new OrderTable(tableGroup, 3, true);
+        OrderTable changeTable = new OrderTable(null, 3, true);
         ExtractableResponse<Response> response = putOrderTableEmpty(savedOrderTable.getId(), changeTable);
         OrderTable changedTable = response.as(OrderTable.class);
 
@@ -66,12 +60,10 @@ class TableRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("테이블 손님 수 변경")
     void changeNumberOfGuests() {
-        TableGroup tableGroup = new TableGroup(1L, LocalDateTime.now());
-
-        OrderTable orderTable = new OrderTable(tableGroup, 3, false);
+        OrderTable orderTable = new OrderTable(null, 3, false);
         OrderTable savedOrderTable = postOrderTable(orderTable).as(OrderTable.class);
 
-        OrderTable changeTable = new OrderTable(tableGroup, 5, false);
+        OrderTable changeTable = new OrderTable(null, 5, false);
         ExtractableResponse<Response> response = putOrderTableGuest(savedOrderTable.getId(), changeTable);
         OrderTable changedTable = response.as(OrderTable.class);
 

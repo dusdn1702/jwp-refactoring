@@ -27,8 +27,9 @@ public class TableRestController {
 
     @GetMapping("/api/tables")
     public ResponseEntity<List<OrderTable>> list() {
+        List<OrderTable> list = tableService.list();
         return ResponseEntity.ok()
-                .body(tableService.list())
+                .body(list)
                 ;
     }
 
