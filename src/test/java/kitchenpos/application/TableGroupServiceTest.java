@@ -1,16 +1,16 @@
 package kitchenpos.application;
 
-import kitchenpos.dao.*;
+import kitchenpos.dao.JpaOrderDao;
+import kitchenpos.dao.JpaOrderTableDao;
+import kitchenpos.dao.JpaTableGroupDao;
 import kitchenpos.domain.OrderTable;
 import kitchenpos.domain.TableGroup;
 import kitchenpos.exception.KitchenposException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +37,11 @@ class TableGroupServiceTest extends ServiceTest {
     @Test
     @DisplayName("테이블 그룹을 생성한다.")
     void create() {
+        for (OrderTable orderTable : tableGroup.getOrderTables()) {
+            orderTable.makeTableGroup(null);
+            orderTable.makeEmpty(true);
+        }
+
         when(orderTableDao.findAllByIdIn(anyList()))
                 .thenReturn(tableGroup.getOrderTables());
         when(tableGroupDao.save(any(TableGroup.class)))
@@ -110,9 +115,9 @@ class TableGroupServiceTest extends ServiceTest {
                 .thenReturn(false);
 
         tableGroupService.ungroup(1L);
-        assertThat(orderTable.getTableGroupId()).isNull();
+        assertThat(orderTable.getTableGroup()).isNull();
         assertThat(orderTable.isEmpty()).isFalse();
-        assertThat(orderTable2.getTableGroupId()).isNull();
+        assertThat(orderTable2.getTableGroup()).isNull();
         assertThat(orderTable2.isEmpty()).isFalse();
     }
 

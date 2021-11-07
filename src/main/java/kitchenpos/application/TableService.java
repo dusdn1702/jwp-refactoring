@@ -38,7 +38,7 @@ public class TableService {
         final OrderTable savedOrderTable = orderTableDao.findById(orderTableId)
                 .orElseThrow(() -> new KitchenposException(ILLEGAL_ORDER_TABLE_ID));
 
-        if (Objects.nonNull(savedOrderTable.getTableGroupId())) {
+        if (Objects.nonNull(savedOrderTable.getTableGroup())) {
             throw new KitchenposException(IMPOSSIBLE_TABLE_GROUP_ID);
         }
 

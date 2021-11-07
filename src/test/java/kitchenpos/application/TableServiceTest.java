@@ -3,6 +3,7 @@ package kitchenpos.application;
 import kitchenpos.dao.JpaOrderDao;
 import kitchenpos.dao.JpaOrderTableDao;
 import kitchenpos.domain.OrderTable;
+import kitchenpos.domain.TableGroup;
 import kitchenpos.exception.KitchenposException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +48,7 @@ class TableServiceTest extends ServiceTest{
                 .thenReturn(orderTable);
         OrderTable actual = tableService.create(orderTable);
 
-        assertThat(actual.getId()).isNull();
+        assertThat(actual.getId()).isNotNull();
         assertThat(actual).usingRecursiveComparison()
                 .isEqualTo(orderTable);
     }
@@ -98,11 +100,13 @@ class TableServiceTest extends ServiceTest{
     @Test
     @DisplayName("주문테이블에 테이블 그룹이 존재하면 예외가 발생한다.")
     void changeEmptyExceptionTableGroup() {
+        tableGroup = new TableGroup(1L, LocalDateTime.now());
         orderTable.makeTableGroup(tableGroup);
+
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.of(orderTable));
 
-        assertThatThrownBy(() -> tableService.changeEmpty(1L, orderTable2))
+        assertThatThrownBy(() -> tableService.changeEmpty(orderTable.getId(), orderTable2))
                 .isInstanceOf(KitchenposException.class)
                 .hasMessage(IMPOSSIBLE_TABLE_GROUP_ID);
     }

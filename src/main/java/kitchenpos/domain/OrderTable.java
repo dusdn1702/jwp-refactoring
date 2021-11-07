@@ -35,7 +35,6 @@ public class OrderTable {
 
     public void makeTableGroup(TableGroup tableGroup) {
         this.tableGroup = tableGroup;
-        makeEmpty(false);
     }
 
     public void makeEmpty(boolean empty) {
@@ -50,8 +49,8 @@ public class OrderTable {
         return id;
     }
 
-    public Long getTableGroupId() {
-        return tableGroup.getId();
+    public TableGroup getTableGroup() {
+        return tableGroup;
     }
 
     public int getNumberOfGuests() {
