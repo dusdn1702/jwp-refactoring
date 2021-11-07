@@ -38,10 +38,6 @@ public class TableService {
         final OrderTable savedOrderTable = orderTableDao.findById(orderTableId)
                 .orElseThrow(() -> new KitchenposException(ILLEGAL_ORDER_TABLE_ID));
 
-        if (Objects.nonNull(savedOrderTable.getTableGroup())) {
-            throw new KitchenposException(IMPOSSIBLE_TABLE_GROUP_ID);
-        }
-
         if (orderDao.existsByOrderTable_IdAndOrderStatusIn(
                 orderTableId, Arrays.asList(OrderStatus.COOKING.name(), OrderStatus.MEAL.name()))) {
             throw new KitchenposException(IMPOSSIBLE_TABLE_STATUS);

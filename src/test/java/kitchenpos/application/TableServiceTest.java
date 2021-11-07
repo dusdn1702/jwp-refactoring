@@ -37,8 +37,8 @@ class TableServiceTest extends ServiceTest{
 
     @BeforeEach
     void setUp() {
-        orderTable = new OrderTable(1L, null, 3, false);
-        orderTable2 = new OrderTable(1L, null, 6, true);
+        orderTable = new OrderTable(1L, 3, false);
+        orderTable2 = new OrderTable(1L, 6, true);
     }
 
     @Test
@@ -56,7 +56,7 @@ class TableServiceTest extends ServiceTest{
     @Test
     @DisplayName("모든 주문 테이블을 조회한다.")
     void list() {
-        orderTable2 = new OrderTable(null, null, 0, true);
+        orderTable2 = new OrderTable(null, 0, true);
 
         List<OrderTable> orderTables = new ArrayList<>();
         orderTables.add(orderTable);
@@ -101,7 +101,6 @@ class TableServiceTest extends ServiceTest{
     @DisplayName("주문테이블에 테이블 그룹이 존재하면 예외가 발생한다.")
     void changeEmptyExceptionTableGroup() {
         tableGroup = new TableGroup(1L, LocalDateTime.now());
-        orderTable.makeTableGroup(tableGroup);
 
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.of(orderTable));

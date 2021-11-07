@@ -23,10 +23,10 @@ class TableGroupRestControllerTest extends ControllerTest {
     void create() {
         TableGroup tableGroup = new TableGroup(LocalDateTime.now());
 
-        OrderTable orderTable = new OrderTable(tableGroup, 0, true);
+        OrderTable orderTable = new OrderTable(0, true);
 //        orderTable = postOrderTable(orderTable).as(OrderTable.class);
 
-        OrderTable orderTable2 = new OrderTable(tableGroup, 0, true);
+        OrderTable orderTable2 = new OrderTable(0, true);
 //        orderTable2 = postOrderTable(orderTable2).as(OrderTable.class);
 
         List<OrderTable> orderTables = new ArrayList<>();
@@ -46,10 +46,10 @@ class TableGroupRestControllerTest extends ControllerTest {
     void ungroup() {
         TableGroup tableGroup = new TableGroup(LocalDateTime.now());
 
-        OrderTable orderTable = new OrderTable(tableGroup, 0, true);
+        OrderTable orderTable = new OrderTable(0, true);
         orderTable = postOrderTable(orderTable).as(OrderTable.class);
 
-        OrderTable orderTable2 = new OrderTable(tableGroup, 0, true);
+        OrderTable orderTable2 = new OrderTable(0, true);
         orderTable2 = postOrderTable(orderTable2).as(OrderTable.class);
 
         List<OrderTable> orderTables = new ArrayList<>();

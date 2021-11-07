@@ -48,7 +48,7 @@ public class TableGroupService {
         }
 
         for (final OrderTable savedOrderTable : savedOrderTables) {
-            if (!savedOrderTable.isEmpty() || Objects.nonNull(savedOrderTable.getTableGroup())) {
+            if (!savedOrderTable.isEmpty()) {
                 throw new KitchenposException(NOT_EMPTY_TABLE_TO_CREATE);
             }
         }
@@ -58,8 +58,7 @@ public class TableGroupService {
         final TableGroup savedTableGroup = tableGroupDao.save(tableGroup);
 
         for (OrderTable savedOrderTable : savedOrderTables) {
-            savedOrderTable.makeTableGroup(tableGroup);
-            savedOrderTable = new OrderTable(savedTableGroup, savedOrderTable.getNumberOfGuests(), savedOrderTable.isEmpty());
+            savedOrderTable = new OrderTable(savedOrderTable.getNumberOfGuests(), savedOrderTable.isEmpty());
             orderTableDao.save(savedOrderTable);
         }
         savedTableGroup.addAllOrderTables(savedOrderTables);
@@ -81,7 +80,6 @@ public class TableGroupService {
         }
 
         for (final OrderTable orderTable : orderTables) {
-            orderTable.makeTableGroup(null);
             orderTableDao.save(orderTable);
         }
     }

@@ -38,7 +38,6 @@ class TableGroupServiceTest extends ServiceTest {
     @DisplayName("테이블 그룹을 생성한다.")
     void create() {
         for (OrderTable orderTable : tableGroup.getOrderTables()) {
-            orderTable.makeTableGroup(null);
             orderTable.makeEmpty(true);
         }
 
@@ -97,7 +96,6 @@ class TableGroupServiceTest extends ServiceTest {
     @Test
     @DisplayName("테이블 그룹 내 테이블이 그룹에 속해있으면 에러가 발생한다.")
     void createExceptionTableInGroup() {
-        orderTable.makeTableGroup(null);
         when(orderTableDao.findAllByIdIn(anyList()))
                 .thenReturn(tableGroup.getOrderTables());
 
@@ -115,9 +113,7 @@ class TableGroupServiceTest extends ServiceTest {
                 .thenReturn(false);
 
         tableGroupService.ungroup(1L);
-        assertThat(orderTable.getTableGroup()).isNull();
         assertThat(orderTable.isEmpty()).isFalse();
-        assertThat(orderTable2.getTableGroup()).isNull();
         assertThat(orderTable2.isEmpty()).isFalse();
     }
 
