@@ -24,10 +24,10 @@ class TableGroupRestControllerTest extends ControllerTest {
         TableGroup tableGroup = new TableGroup(LocalDateTime.now());
 
         OrderTable orderTable = new OrderTable(0, true);
-//        orderTable = postOrderTable(orderTable).as(OrderTable.class);
+        orderTable = postOrderTable(orderTable).as(OrderTable.class);
 
         OrderTable orderTable2 = new OrderTable(0, true);
-//        orderTable2 = postOrderTable(orderTable2).as(OrderTable.class);
+        orderTable2 = postOrderTable(orderTable2).as(OrderTable.class);
 
         List<OrderTable> orderTables = new ArrayList<>();
         orderTables.add(orderTable);

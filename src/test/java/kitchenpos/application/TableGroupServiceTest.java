@@ -107,8 +107,8 @@ class TableGroupServiceTest extends ServiceTest {
     @Test
     @DisplayName("테이블 그룹을 해제하고 테이블을 비운다.")
     void ungroup() {
-        when(orderTableDao.findAllByTableGroup_Id(anyLong()))
-                .thenReturn(tableGroup.getOrderTables());
+//        when(orderTableDao.findAllByTableGroup_Id(anyLong()))
+//                .thenReturn(tableGroup.getOrderTables());
         when(orderDao.existsByOrderTableIdInAndOrderStatusIn(anyList(), anyList()))
                 .thenReturn(false);
 
@@ -120,8 +120,8 @@ class TableGroupServiceTest extends ServiceTest {
     @Test
     @DisplayName("식사가 완료되지 않았거나 주문이 있는 테이블은 에러가 발생한다.")
     void ungroupExceptionStatus() {
-        when(orderTableDao.findAllByTableGroup_Id(anyLong()))
-                .thenReturn(tableGroup.getOrderTables());
+//        when(orderTableDao.findAllByTableGroup_Id(anyLong()))
+//                .thenReturn(tableGroup.getOrderTables());
         when(orderDao.existsByOrderTableIdInAndOrderStatusIn(anyList(), anyList()))
                 .thenReturn(true);
 

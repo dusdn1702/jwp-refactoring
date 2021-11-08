@@ -7,6 +7,4 @@ import java.util.List;
 
 public interface JpaOrderTableDao extends JpaRepository<OrderTable, Long> {
     List<OrderTable> findAllByIdIn(List<Long> orderTableIds);
-
-    List<OrderTable> findAllByTableGroup_Id(Long tableGroupId);
 }

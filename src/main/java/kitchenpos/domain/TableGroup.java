@@ -14,7 +14,7 @@ public class TableGroup {
     @Column(nullable = false)
     private LocalDateTime createdDate;
 
-    @OneToMany(mappedBy = "tableGroup", cascade = CascadeType.ALL)
+    @OneToMany
     private List<OrderTable> orderTables;
 
     protected TableGroup() {

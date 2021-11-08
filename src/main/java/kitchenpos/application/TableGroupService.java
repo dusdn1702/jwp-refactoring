@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static kitchenpos.exception.KitchenposException.*;
@@ -68,7 +69,9 @@ public class TableGroupService {
 
     @Transactional
     public void ungroup(final Long tableGroupId) {
-        final List<OrderTable> orderTables = orderTableDao.findAllByTableGroup_Id(tableGroupId);
+        TableGroup tableGroup = tableGroupDao.findById(tableGroupId)
+                .orElseThrow(() -> new KitchenposException("12312"));
+        final List<OrderTable> orderTables = tableGroup.getOrderTables();
 
         final List<Long> orderTableIds = orderTables.stream()
                 .map(OrderTable::getId)
