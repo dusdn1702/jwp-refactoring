@@ -98,19 +98,6 @@ class TableServiceTest extends ServiceTest{
     }
 
     @Test
-    @DisplayName("주문테이블에 테이블 그룹이 존재하면 예외가 발생한다.")
-    void changeEmptyExceptionTableGroup() {
-        tableGroup = new TableGroup(1L, LocalDateTime.now());
-
-        when(orderTableDao.findById(anyLong()))
-                .thenReturn(Optional.of(orderTable));
-
-        assertThatThrownBy(() -> tableService.changeEmpty(orderTable.getId(), orderTable2))
-                .isInstanceOf(KitchenposException.class)
-                .hasMessage(IMPOSSIBLE_TABLE_GROUP_ID);
-    }
-
-    @Test
     @DisplayName("요리중이거나 식사중인 테이블은 비울 수 없다.")
     void changeEmptyExceptionStatus() {
         when(orderTableDao.findById(anyLong()))

@@ -53,7 +53,6 @@ public class TableGroupService {
                 throw new KitchenposException(NOT_EMPTY_TABLE_TO_CREATE);
             }
         }
-
         tableGroup.tableCreatedAt(LocalDateTime.now());
 
         final TableGroup savedTableGroup = tableGroupDao.save(tableGroup);
