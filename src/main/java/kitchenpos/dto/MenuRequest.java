@@ -32,7 +32,7 @@ public class MenuRequest {
         return menuGroupId;
     }
 
-    public List<MenuProductRequest> getMenuProducts() {
+    public List<MenuProductRequest> getMenuProductRequests() {
         return menuProducts;
     }
 }

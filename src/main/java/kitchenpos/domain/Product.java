@@ -30,6 +30,10 @@ public class Product {
         this.id = id;
     }
 
+    public BigDecimal calculateTotal(final long quantity) {
+        return price.multiply(BigDecimal.valueOf(quantity));
+    }
+
     public Long getId() {
         return id;
     }
