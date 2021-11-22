@@ -1,5 +1,7 @@
 package kitchenpos.domain;
 
+import kitchenpos.dto.MenuProductRequest;
+
 import javax.persistence.*;
 
 @Entity
@@ -53,5 +55,9 @@ public class MenuProduct {
 
     public long getQuantity() {
         return quantity;
+    }
+
+    public MenuProductRequest toDto() {
+        return new MenuProductRequest(this.product.getId(), this.quantity);
     }
 }

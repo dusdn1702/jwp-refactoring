@@ -1,8 +1,11 @@
 package kitchenpos.domain;
 
+import kitchenpos.dto.MenuRequest;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "menu")
@@ -60,5 +63,13 @@ public class Menu {
 
     public List<MenuProduct> getMenuProducts() {
         return menuProducts;
+    }
+
+    public MenuRequest getMenuDto() {
+    return new MenuRequest(
+                this.name,
+                this.price,
+                this.menuGroup.getId(),
+                this.menuProducts.stream().map(MenuProduct::toDto).collect(Collectors.toList()));
     }
 }

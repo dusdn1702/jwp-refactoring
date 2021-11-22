@@ -3,17 +3,18 @@ package kitchenpos.ui;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import kitchenpos.domain.Menu;
 import kitchenpos.domain.MenuGroup;
-import kitchenpos.domain.MenuProduct;
 import kitchenpos.domain.Product;
+import kitchenpos.dto.MenuRequest;
+import kitchenpos.dto.MenuProductRequest;
+import kitchenpos.dto.MenuResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static kitchenpos.ui.MenuGroupRestControllerTest.postMenuGroup;
@@ -30,19 +31,15 @@ class MenuRestControllerTest extends ControllerTest {
         Product product = new Product("떡볶이", BigDecimal.valueOf(10000));
         Product savedProduct = postProduct(product).as(Product.class);
 
-        Menu menu = new Menu(
+        MenuProductRequest menuProductRequest = new MenuProductRequest(savedProduct.getId(), 10);
+        MenuRequest menuRequest = new MenuRequest(
                 "떡볶이",
                 BigDecimal.valueOf(3000),
-                savedMenuGroup,
-                null);
+                savedMenuGroup.getId(),
+                Collections.singletonList(menuProductRequest));
 
-        MenuProduct menuProduct = new MenuProduct(menu, savedProduct, 10);
-        List<MenuProduct> menuProducts = new ArrayList<>();
-        menuProducts.add(menuProduct);
-        menu.addAllMenuProducts(menuProducts);
-
-        ExtractableResponse<Response> response = postMenu(menu);
-        Menu savedMenu = response.as(Menu.class);
+        ExtractableResponse<Response> response = postMenu(menuRequest);
+        MenuResponse savedMenu = response.as(MenuResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(savedMenu.getId()).isNotNull();
     }
@@ -55,7 +52,7 @@ class MenuRestControllerTest extends ControllerTest {
         assertThat(response.body().as(List.class)).isEmpty();
     }
 
-    static ExtractableResponse<Response> postMenu(Menu menu) {
+    static ExtractableResponse<Response> postMenu(MenuRequest menu) {
         return RestAssured
                 .given().log().all()
                 .accept("application/json")

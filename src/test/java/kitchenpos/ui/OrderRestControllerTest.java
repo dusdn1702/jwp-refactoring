@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import kitchenpos.domain.*;
+import kitchenpos.dto.MenuResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,9 +45,9 @@ class OrderRestControllerTest extends ControllerTest {
         List<MenuProduct> menuProducts = new ArrayList<>();
         menuProducts.add(menuProduct);
         menu.addAllMenuProducts(menuProducts);
-        Menu savedMenu = postMenu(menu).as(Menu.class);
+        MenuResponse savedMenu = postMenu(menu.getMenuDto()).as(MenuResponse.class);
 
-        OrderLineItem orderLineItem = new OrderLineItem(1L, order, savedMenu, 5);
+        OrderLineItem orderLineItem = new OrderLineItem(1L, order, menu, 5);
         List<OrderLineItem> orderLineItems = new ArrayList<>();
         orderLineItems.add(orderLineItem);
 
