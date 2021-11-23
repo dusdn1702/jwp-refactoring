@@ -2,6 +2,8 @@ package kitchenpos.application;
 
 import kitchenpos.dao.JpaMenuGroupDao;
 import kitchenpos.domain.MenuGroup;
+import kitchenpos.dto.MenuGroupRequest;
+import kitchenpos.dto.MenuGroupResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -28,7 +30,9 @@ class MenuGroupServiceTest extends ServiceTest {
         when(menuGroupDao.save(any(MenuGroup.class)))
                 .thenReturn(menuGroup);
 
-        MenuGroup actual = menuGroupService.create(menuGroup);
+        MenuGroupRequest menuGroupRequest = new MenuGroupRequest(menuGroup.getName());
+        MenuGroupResponse actual = menuGroupService.create(menuGroupRequest);
+
         assertThat(actual.getId()).isNotNull();
         assertThat(actual.getName()).isEqualTo(menuGroup.getName());
     }
