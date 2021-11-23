@@ -8,5 +8,5 @@ import java.util.List;
 public interface JpaOrderDao extends JpaRepository<Order, Long> {
     boolean existsByOrderTable_IdAndOrderStatusIn(Long orderTableId, List<String> asList);
 
-    boolean existsByOrderTableIdInAndOrderStatusIn(List<Long> orderTableIds, List<String> asList);
+    boolean existsByOrderTable_IdInAndOrderStatusIn(List<Long> orderTableIds, List<String> asList);
 }

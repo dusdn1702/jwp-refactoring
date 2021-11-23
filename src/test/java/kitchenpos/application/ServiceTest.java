@@ -1,6 +1,8 @@
 package kitchenpos.application;
 
 import kitchenpos.domain.*;
+import kitchenpos.dto.OrderLineItemRequest;
+import kitchenpos.dto.OrderRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,6 +22,7 @@ class ServiceTest {
     protected MenuGroup menuGroup;
 
     protected Order order;
+    protected OrderRequest orderRequest;
     protected OrderLineItem orderLineItem;
     protected List<OrderLineItem> orderLineItems;
 
@@ -53,7 +56,8 @@ class ServiceTest {
         orderLineItems = new ArrayList<>();
         orderLineItems.add(orderLineItem);
 
-        order.addAllOrderLineItems(orderLineItems);
+        order.addAllOrderLineItems(new OrderLineItems(orderLineItems));
+        orderRequest = OrderRequest.of(order);
 
         List<OrderTable> orderTables = new ArrayList<>(Arrays.asList(orderTable, orderTable2));
         tableGroup.addAllOrderTables(orderTables);

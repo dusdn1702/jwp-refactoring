@@ -73,6 +73,8 @@ class MenuServiceTest extends ServiceTest {
     void createExceptionMinusPrice(Integer price) {
         when(menuGroupDao.findById(anyLong()))
                 .thenReturn(Optional.of(menuGroup));
+        when(productDao.findById(anyLong()))
+                .thenReturn(Optional.of(product));
 
         MenuRequest menuRequest = new MenuRequest(
                 menu.getName(),
@@ -91,6 +93,8 @@ class MenuServiceTest extends ServiceTest {
     void createExceptionEmptyPrice(BigDecimal price) {
         when(menuGroupDao.findById(anyLong()))
                 .thenReturn(Optional.of(menuGroup));
+        when(productDao.findById(anyLong()))
+                .thenReturn(Optional.of(product));
 
         MenuRequest menuRequest = new MenuRequest(
                 menu.getName(),

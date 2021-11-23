@@ -1,5 +1,7 @@
 package kitchenpos.domain;
 
+import kitchenpos.dto.OrderResponse;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,12 +40,27 @@ public class Order {
         this.id = id;
     }
 
-    public void addAllOrderLineItems(List<OrderLineItem> orderLineItems) {
-        this.orderLineItems = orderLineItems;
+    public static Order of(OrderResponse orderResponse) {
+        OrderTable orderTable = OrderTable.of(orderResponse.getOrderTableResponse());
+        return new Order(orderResponse.getId(), orderTable, orderResponse.getOrderStatus(), orderResponse.getOrderedTime());
+    }
+
+    public void addAllOrderLineItems(OrderLineItems orderLineItems) {
+        this.orderLineItems = orderLineItems.getOrderLineItems();
     }
 
     public void changeOrderStatus(String statusName) {
         this.orderStatus = statusName;
+    }
+
+    public void makeOrderIn(OrderTable orderTable, OrderStatus orderStatus, LocalDateTime orderedTime) {
+        this.orderTable = orderTable;
+        this.orderStatus = orderStatus.name();
+        this.orderedTime = orderedTime;
+    }
+
+    public boolean sameOrderStatus(OrderStatus status) {
+        return orderStatus.equals(status.name());
     }
 
     public Long getId() {
@@ -66,9 +83,7 @@ public class Order {
         return orderLineItems;
     }
 
-    public void makeOrderIn(OrderTable orderTable, OrderStatus orderStatus, LocalDateTime orderedTime) {
-        this.orderTable = orderTable;
-        this.orderStatus = orderStatus.name();
-        this.orderedTime = orderedTime;
+    public long getOrderTableId() {
+        return orderTable.getId();
     }
 }

@@ -12,8 +12,6 @@ import org.springframework.util.CollectionUtils;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static kitchenpos.exception.KitchenposException.*;
@@ -76,7 +74,7 @@ public class TableGroupService {
                 .map(OrderTable::getId)
                 .collect(Collectors.toList());
 
-        if (orderDao.existsByOrderTableIdInAndOrderStatusIn(
+        if (orderDao.existsByOrderTable_IdInAndOrderStatusIn(
                 orderTableIds, Arrays.asList(OrderStatus.COOKING.name(), OrderStatus.MEAL.name()))) {
             throw new KitchenposException(IMPOSSIBLE_TABLE_STATUS);
         }

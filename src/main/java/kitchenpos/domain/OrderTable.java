@@ -1,5 +1,7 @@
 package kitchenpos.domain;
 
+import kitchenpos.dto.OrderTableResponse;
+
 import javax.persistence.*;
 
 @Entity
@@ -30,6 +32,10 @@ public class OrderTable {
     public OrderTable(Long id, int numberOfGuests, boolean empty) {
         this(numberOfGuests, empty);
         this.id = id;
+    }
+
+    public static OrderTable of(OrderTableResponse orderTableResponse) {
+        return new OrderTable(orderTableResponse.getId(), orderTableResponse.getNumberOfGuests(), orderTableResponse.isEmpty());
     }
 
     public void makeEmpty(boolean empty) {

@@ -110,7 +110,7 @@ class TableGroupServiceTest extends ServiceTest {
     void ungroup() {
         when(tableGroupDao.findById(anyLong()))
                 .thenReturn(Optional.of(tableGroup));
-        when(orderDao.existsByOrderTableIdInAndOrderStatusIn(anyList(), anyList()))
+        when(orderDao.existsByOrderTable_IdInAndOrderStatusIn(anyList(), anyList()))
                 .thenReturn(false);
 
         tableGroupService.ungroup(1L);
@@ -123,7 +123,7 @@ class TableGroupServiceTest extends ServiceTest {
     void ungroupExceptionStatus() {
         when(tableGroupDao.findById(anyLong()))
                 .thenReturn(Optional.of(tableGroup));
-        when(orderDao.existsByOrderTableIdInAndOrderStatusIn(anyList(), anyList()))
+        when(orderDao.existsByOrderTable_IdInAndOrderStatusIn(anyList(), anyList()))
                 .thenReturn(true);
 
         assertThatThrownBy(() -> tableGroupService.ungroup(1L))

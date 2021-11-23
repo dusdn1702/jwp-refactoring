@@ -37,9 +37,9 @@ class MenuRestControllerTest extends ControllerTest {
                 BigDecimal.valueOf(3000),
                 savedMenuGroup.getId(),
                 Collections.singletonList(menuProductRequest));
-
         ExtractableResponse<Response> response = postMenu(menuRequest);
         MenuResponse savedMenu = response.as(MenuResponse.class);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(savedMenu.getId()).isNotNull();
     }

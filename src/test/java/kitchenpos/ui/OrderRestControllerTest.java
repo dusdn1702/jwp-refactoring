@@ -4,7 +4,10 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import kitchenpos.domain.*;
+import kitchenpos.dto.MenuRequest;
 import kitchenpos.dto.MenuResponse;
+import kitchenpos.dto.OrderRequest;
+import kitchenpos.dto.OrderResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class OrderRestControllerTest extends ControllerTest {
     private Order order;
+    private OrderRequest orderRequest;
 
     @BeforeEach
     void setUp() {
@@ -45,24 +49,30 @@ class OrderRestControllerTest extends ControllerTest {
         List<MenuProduct> menuProducts = new ArrayList<>();
         menuProducts.add(menuProduct);
         menu.addAllMenuProducts(menuProducts);
-        MenuResponse savedMenu = postMenu(menu.getMenuDto()).as(MenuResponse.class);
 
-        OrderLineItem orderLineItem = new OrderLineItem(1L, order, menu, 5);
+        MenuRequest menuDto = menu.getMenuDto();
+        MenuResponse menuResponse = postMenu(menuDto).as(MenuResponse.class);
+
+        menu = new Menu(menuResponse.getId(), menu.getName(), menu.getPrice(), menu.getMenuGroup(), menu.getMenuProducts());
+
+        OrderLineItem orderLineItem = new OrderLineItem(order, menu, 5);
         List<OrderLineItem> orderLineItems = new ArrayList<>();
         orderLineItems.add(orderLineItem);
 
-        OrderTable orderTable = new OrderTable(null, 0, false);
+        OrderTable orderTable = new OrderTable(0, false);
         OrderTable savedOrderTable = postOrderTable(orderTable).as(OrderTable.class);
 
         order = new Order(savedOrderTable, OrderStatus.COOKING.name(), LocalDateTime.now());
-        order.addAllOrderLineItems(orderLineItems);
+        order.addAllOrderLineItems(new OrderLineItems(orderLineItems));
+
     }
 
     @Test
     @DisplayName("Order 생성")
     void create() {
-        ExtractableResponse<Response> response = postOrder(order);
-        Order savedOrder = response.as(Order.class);
+        orderRequest = OrderRequest.of(order);
+        ExtractableResponse<Response> response = postOrder(orderRequest);
+        OrderResponse savedOrder = response.as(OrderResponse.class);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(savedOrder.getId()).isNotNull();
@@ -71,9 +81,10 @@ class OrderRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("모든 Order 조회")
     void list() {
-        postOrder(order);
-        postOrder(order);
-        postOrder(order);
+        orderRequest = OrderRequest.of(order);
+        postOrder(orderRequest);
+        postOrder(orderRequest);
+        postOrder(orderRequest);
         ExtractableResponse<Response> response = getOrders();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -83,22 +94,27 @@ class OrderRestControllerTest extends ControllerTest {
     @Test
     @DisplayName("Order 상태 변경")
     void changeOrderStatus() {
-        Order savedOrder = postOrder(order).as(Order.class);
-        savedOrder.changeOrderStatus(OrderStatus.MEAL.name());
+        orderRequest = OrderRequest.of(order);
+        OrderResponse savedOrderResponse = postOrder(orderRequest).as(OrderResponse.class);
 
-        ExtractableResponse<Response> response = putOrderStatus(savedOrder.getId(), savedOrder);
-        Order changedOrder = response.as(Order.class);
+        Order savedOrder = Order.of(savedOrderResponse);
+        savedOrder.changeOrderStatus(OrderStatus.MEAL.name());
+        savedOrder.addAllOrderLineItems(new OrderLineItems(order.getOrderLineItems()));
+        OrderRequest anotherOrderRequest = OrderRequest.of(savedOrder);
+
+        ExtractableResponse<Response> response = putOrderStatus(savedOrder.getId(), anotherOrderRequest);
+        OrderResponse changedOrder = response.as(OrderResponse.class);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(changedOrder.getOrderStatus()).isEqualTo(changedOrder.getOrderStatus());
     }
 
-    static ExtractableResponse<Response> postOrder(Order order) {
+    static ExtractableResponse<Response> postOrder(OrderRequest orderRequest) {
         return RestAssured
                 .given().log().all()
                 .accept("application/json")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(order)
+                .body(orderRequest)
                 .when().post("/api/orders")
                 .then().log().all().extract();
     }
@@ -112,7 +128,7 @@ class OrderRestControllerTest extends ControllerTest {
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> putOrderStatus(long orderId, Order changeOrder) {
+    private ExtractableResponse<Response> putOrderStatus(long orderId, OrderRequest changeOrder) {
         return RestAssured
                 .given().log().all()
                 .accept("application/json")
