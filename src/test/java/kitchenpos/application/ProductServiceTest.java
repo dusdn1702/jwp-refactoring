@@ -2,6 +2,8 @@ package kitchenpos.application;
 
 import kitchenpos.dao.JpaProductDao;
 import kitchenpos.domain.Product;
+import kitchenpos.dto.ProductRequest;
+import kitchenpos.dto.ProductResponse;
 import kitchenpos.exception.KitchenposException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,13 +33,13 @@ class ProductServiceTest extends ServiceTest {
     @Test
     @DisplayName("상품을 생성한다.")
     void create() {
+        ProductRequest productRequest = new ProductRequest(product.getName(), product.getPrice());
+
         when(productDao.save(any(Product.class)))
                 .thenReturn(product);
 
-        Product actual = productService.create(product);
+        ProductResponse actual = productService.create(productRequest);
         assertThat(actual.getId()).isNotNull();
-        assertThat(actual).usingRecursiveComparison()
-                .isEqualTo(product);
     }
 
     @ParameterizedTest
@@ -45,8 +47,9 @@ class ProductServiceTest extends ServiceTest {
     @DisplayName("상품의 가격이 0보다 작으면 예외가 발생한다.")
     void createExceptionMinusPrice(Integer price) {
         product.setPrice(BigDecimal.valueOf(price));
+        ProductRequest productRequest = new ProductRequest(product.getName(), product.getPrice());
 
-        assertThatThrownBy(() -> productService.create(product))
+        assertThatThrownBy(() -> productService.create(productRequest))
                 .isInstanceOf(KitchenposException.class)
                 .hasMessage(ILLEGAL_PRICE);
     }
@@ -56,8 +59,9 @@ class ProductServiceTest extends ServiceTest {
     @DisplayName("상품의 가격이 없으면 예외가 발생한다.")
     void createExceptionEmptyPrice(BigDecimal price) {
         product.setPrice(price);
+        ProductRequest productRequest = new ProductRequest(product.getName(), product.getPrice());
 
-        assertThatThrownBy(() -> productService.create(product))
+        assertThatThrownBy(() -> productService.create(productRequest))
                 .isInstanceOf(KitchenposException.class)
                 .hasMessage(ILLEGAL_PRICE);
     }
