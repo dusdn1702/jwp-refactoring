@@ -1,0 +1,53 @@
+package kitchenpos.product.domain;
+
+import kitchenpos.product.dto.ProductRequest;
+
+import javax.persistence.*;
+import java.math.BigDecimal;
+
+@Entity
+@Table(name = "product")
+public class Product {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private BigDecimal price;
+
+    protected Product() {
+    }
+
+    public Product(String name, BigDecimal price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    public Product(Long id, String name, BigDecimal price) {
+        this(name, price);
+        this.id = id;
+    }
+
+    public static Product of(ProductRequest productRequest) {
+        return new Product(productRequest.getName(), productRequest.getPrice());
+    }
+
+    public BigDecimal calculateTotal(final long quantity) {
+        return price.multiply(BigDecimal.valueOf(quantity));
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+}
