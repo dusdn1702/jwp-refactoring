@@ -1,8 +1,9 @@
 package kitchenpos.application;
 
 import kitchenpos.domain.*;
-import kitchenpos.dto.OrderLineItemRequest;
 import kitchenpos.dto.OrderRequest;
+import kitchenpos.dto.OrderTableRequest;
+import kitchenpos.dto.TableGroupRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,8 +29,11 @@ class ServiceTest {
 
     protected OrderTable orderTable;
     protected OrderTable orderTable2;
+    protected OrderTableRequest orderTableRequest1;
+    protected OrderTableRequest orderTableRequest2;
 
     protected TableGroup tableGroup;
+    protected TableGroupRequest tableGroupRequest;
 
     @BeforeEach
     void setUp() {
@@ -49,6 +53,8 @@ class ServiceTest {
 
         orderTable = new OrderTable(1L, 3, false);
         orderTable2 = new OrderTable(2L, 6, false);
+        orderTableRequest1 = new OrderTableRequest(orderTable.getNumberOfGuests(), orderTable.isEmpty());
+        orderTableRequest2 = new OrderTableRequest(orderTable2.getNumberOfGuests(), orderTable2.isEmpty());
 
         order = new Order(1L, orderTable, OrderStatus.COOKING.name(), LocalDateTime.now());
         orderLineItem = new OrderLineItem(1L, order, menu, 10);
@@ -61,5 +67,6 @@ class ServiceTest {
 
         List<OrderTable> orderTables = new ArrayList<>(Arrays.asList(orderTable, orderTable2));
         tableGroup.addAllOrderTables(orderTables);
+        tableGroupRequest = new TableGroupRequest(tableGroup.getCreatedDate(), List.of(orderTableRequest1, orderTableRequest2));
     }
 }

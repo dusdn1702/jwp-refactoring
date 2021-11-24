@@ -42,7 +42,6 @@ public class MenuService {
         MenuGroup menuGroup = menuGroupDao.findById(menuRequest.getMenuGroupId())
                 .orElseThrow(() -> new KitchenposException(ILLEGAL_MENU_GROUP_ID));
         Menu menu = new Menu(menuRequest.getName(), menuRequest.getPrice(), menuGroup, new ArrayList<>());
-
         List<MenuProduct> menuProducts = menuRequest.getMenuProductRequests().stream()
                 .map(menuProductRequest -> makeMenuProduct(menu, menuProductRequest))
                 .collect(Collectors.toList());
@@ -52,11 +51,15 @@ public class MenuService {
         }
         checkPossiblePrice(menuProducts, menu);
 
+        Menu savedMenu = saveMenuAndProducts(menu, menuProducts);
+        return MenuResponse.of(savedMenu);
+    }
+
+    private Menu saveMenuAndProducts(Menu menu, List<MenuProduct> menuProducts) {
         Menu savedMenu = menuDao.save(menu);
         List<MenuProduct> savedMenuProducts = makeMenuProducts(menuProducts, savedMenu);
         savedMenu.addAllMenuProducts(savedMenuProducts);
-
-        return MenuResponse.of(savedMenu);
+        return savedMenu;
     }
 
     private MenuProduct makeMenuProduct(Menu menu, MenuProductRequest menuProductRequest) {
