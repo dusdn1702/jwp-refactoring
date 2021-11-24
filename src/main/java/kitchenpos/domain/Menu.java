@@ -47,11 +47,11 @@ public class Menu {
         this.menuProducts = menuProducts;
     }
 
-    public boolean isValidPrice() {
+    public boolean isInvalidPrice() {
         return Objects.isNull(price) || price.compareTo(BigDecimal.ZERO) < 0;
     }
 
-    public boolean isSumSmallerThan(BigDecimal sum) {
+    public boolean isPriceCheaperThan(BigDecimal sum) {
         return price.compareTo(sum) > 0;
     }
 
@@ -75,11 +75,11 @@ public class Menu {
         return menuProducts;
     }
 
-    public MenuRequest getMenuDto() {
+    public MenuRequest toRequest() {
         return new MenuRequest(
                 this.name,
                 this.price,
                 this.menuGroup.getId(),
-                this.menuProducts.stream().map(MenuProduct::toDto).collect(Collectors.toList()));
+                this.menuProducts.stream().map(MenuProduct::toRequest).collect(Collectors.toList()));
     }
 }

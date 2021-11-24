@@ -46,7 +46,7 @@ class ProductServiceTest extends ServiceTest {
     @ValueSource(ints = {-1, -1000})
     @DisplayName("상품의 가격이 0보다 작으면 예외가 발생한다.")
     void createExceptionMinusPrice(Integer price) {
-        product.setPrice(BigDecimal.valueOf(price));
+        product = new Product(product.getId(), product.getName(), BigDecimal.valueOf(price));
         ProductRequest productRequest = new ProductRequest(product.getName(), product.getPrice());
 
         assertThatThrownBy(() -> productService.create(productRequest))
@@ -58,7 +58,7 @@ class ProductServiceTest extends ServiceTest {
     @NullSource
     @DisplayName("상품의 가격이 없으면 예외가 발생한다.")
     void createExceptionEmptyPrice(BigDecimal price) {
-        product.setPrice(price);
+        product = new Product(product.getId(), product.getName(), price);
         ProductRequest productRequest = new ProductRequest(product.getName(), product.getPrice());
 
         assertThatThrownBy(() -> productService.create(productRequest))

@@ -15,7 +15,6 @@ public class MenuGroup {
     private String name;
 
     protected MenuGroup() {
-
     }
 
     public MenuGroup(String name) {

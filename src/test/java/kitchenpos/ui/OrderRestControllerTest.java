@@ -57,7 +57,7 @@ class OrderRestControllerTest extends ControllerTest {
         menuProducts.add(menuProduct);
         menu.addAllMenuProducts(menuProducts);
 
-        MenuRequest menuDto = menu.getMenuDto();
+        MenuRequest menuDto = menu.toRequest();
         MenuResponse menuResponse = postMenu(menuDto).as(MenuResponse.class);
 
         menu = new Menu(menuResponse.getId(), menu.getName(), menu.getPrice(), menu.getMenuGroup(), menu.getMenuProducts());

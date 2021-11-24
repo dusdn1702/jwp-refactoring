@@ -19,7 +19,6 @@ public class Product {
     private BigDecimal price;
 
     protected Product() {
-
     }
 
     public Product(String name, BigDecimal price) {
@@ -50,9 +49,5 @@ public class Product {
 
     public BigDecimal getPrice() {
         return price;
-    }
-
-    public void setPrice(final BigDecimal price) {
-        this.price = price;
     }
 }

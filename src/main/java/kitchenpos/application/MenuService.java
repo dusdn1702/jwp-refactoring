@@ -49,7 +49,7 @@ public class MenuService {
                 .map(menuProductRequest -> makeMenuProduct(menu, menuProductRequest))
                 .collect(Collectors.toList());
 
-        if (menu.isValidPrice()) {
+        if (menu.isInvalidPrice()) {
             throw new KitchenposException(ILLEGAL_PRICE);
         }
         checkPossiblePrice(menuProducts, menu);
@@ -78,7 +78,7 @@ public class MenuService {
             Product product = menuProduct.getProduct();
             sum = sum.add(product.calculateTotal(menuProduct.getQuantity()));
         }
-        if (menu.isSumSmallerThan(sum)) {
+        if (menu.isPriceCheaperThan(sum)) {
             throw new KitchenposException(IMPOSSIBLE_MENU_PRICE);
         }
     }

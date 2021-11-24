@@ -46,15 +46,14 @@ public class Order {
     }
 
     public void addAllOrderLineItems(OrderLineItems orderLineItems) {
-        this.orderLineItems = orderLineItems.getOrderLineItems();
+        this.orderLineItems = orderLineItems.getLineItems();
     }
 
     public void changeOrderStatus(String statusName) {
         this.orderStatus = statusName;
     }
 
-    public void makeOrderIn(OrderTable orderTable, OrderStatus orderStatus, LocalDateTime orderedTime) {
-        this.orderTable = orderTable;
+    public void makeOrderIn(OrderStatus orderStatus, LocalDateTime orderedTime) {
         this.orderStatus = orderStatus.name();
         this.orderedTime = orderedTime;
     }

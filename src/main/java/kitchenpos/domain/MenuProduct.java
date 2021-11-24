@@ -23,7 +23,6 @@ public class MenuProduct {
     private long quantity;
 
     protected MenuProduct() {
-
     }
 
     public MenuProduct(Long seq, Menu menu, Product product, long quantity) {
@@ -57,7 +56,7 @@ public class MenuProduct {
         return quantity;
     }
 
-    public MenuProductRequest toDto() {
+    public MenuProductRequest toRequest() {
         return new MenuProductRequest(this.product.getId(), this.quantity);
     }
 }

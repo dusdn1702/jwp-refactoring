@@ -51,7 +51,7 @@ public class OrderTable {
         this.numberOfGuests = orderTable.numberOfGuests;
     }
 
-    public boolean isValidGuestNumbers() {
+    public boolean isInvalidGuestNumbers() {
         return numberOfGuests < 0;
     }
 

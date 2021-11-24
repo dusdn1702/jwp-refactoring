@@ -44,7 +44,7 @@ public class OrderService {
         Order order = new Order(orderTable, orderRequest.getOrderStatus(), orderRequest.getOrderedTime());
         OrderLineItems orderLineItems = makeValidOrderLineItems(orderRequest, order);
 
-        order.makeOrderIn(orderTable, COOKING, LocalDateTime.now());
+        order.makeOrderIn(COOKING, LocalDateTime.now());
         Order savedOrder = orderDao.save(order);
 
         OrderLineItems saveOrderLineItems = saveOrderLineItems(orderLineItems);
@@ -94,7 +94,7 @@ public class OrderService {
 
     private OrderLineItems saveOrderLineItems(OrderLineItems orderLineItems) {
         List<OrderLineItem> savedOrderLineItems = new ArrayList<>();
-        for (OrderLineItem orderLineItem : orderLineItems.getOrderLineItems()) {
+        for (OrderLineItem orderLineItem : orderLineItems.getLineItems()) {
             OrderLineItem savedOrderLineItem = orderLineItemDao.save(orderLineItem);
             savedOrderLineItems.add(savedOrderLineItem);
         }

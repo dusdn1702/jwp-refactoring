@@ -4,27 +4,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class OrderLineItems {
-    private final List<OrderLineItem> orderLineItems;
+    private final List<OrderLineItem> lineItems;
 
-    public OrderLineItems(List<OrderLineItem> orderLineItems) {
-        this.orderLineItems = orderLineItems;
+    public OrderLineItems(List<OrderLineItem> lineItems) {
+        this.lineItems = lineItems;
     }
 
     public boolean isEmpty() {
-        return orderLineItems.isEmpty();
+        return lineItems.isEmpty();
     }
 
     public List<Long> menuIdsFromOrderLineItem() {
-        return orderLineItems.stream()
+        return lineItems.stream()
                 .map(OrderLineItem::getMenuId)
                 .collect(Collectors.toList());
     }
 
     public boolean isNotSameSize(long size) {
-        return orderLineItems.size() != size;
+        return lineItems.size() != size;
     }
 
-    public List<OrderLineItem> getOrderLineItems() {
-        return orderLineItems;
+    public List<OrderLineItem> getLineItems() {
+        return lineItems;
     }
 }

@@ -61,7 +61,7 @@ class MenuServiceTest extends ServiceTest {
         when(productDao.findById(anyLong()))
                 .thenReturn(Optional.of(product));
 
-        MenuRequest menuRequest = menu.getMenuDto();
+        MenuRequest menuRequest = menu.toRequest();
         MenuResponse actual = menuService.create(menuRequest);
 
         assertThat(actual.getId()).isNotNull();
@@ -80,7 +80,7 @@ class MenuServiceTest extends ServiceTest {
                 menu.getName(),
                 BigDecimal.valueOf(price),
                 menu.getMenuGroup().getId(),
-                menu.getMenuProducts().stream().map(MenuProduct::toDto).collect(Collectors.toList()));
+                menu.getMenuProducts().stream().map(MenuProduct::toRequest).collect(Collectors.toList()));
 
         assertThatThrownBy(() -> menuService.create(menuRequest))
                 .isInstanceOf(KitchenposException.class)
@@ -100,7 +100,7 @@ class MenuServiceTest extends ServiceTest {
                 menu.getName(),
                 price,
                 menu.getMenuGroup().getId(),
-                menu.getMenuProducts().stream().map(MenuProduct::toDto).collect(Collectors.toList()));
+                menu.getMenuProducts().stream().map(MenuProduct::toRequest).collect(Collectors.toList()));
 
         assertThatThrownBy(() -> menuService.create(menuRequest))
                 .isInstanceOf(KitchenposException.class)
@@ -113,7 +113,7 @@ class MenuServiceTest extends ServiceTest {
         when(menuGroupDao.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
-        MenuRequest menuRequest = menu.getMenuDto();
+        MenuRequest menuRequest = menu.toRequest();
 
         assertThatThrownBy(() -> menuService.create(menuRequest))
                 .isInstanceOf(KitchenposException.class)
@@ -132,7 +132,7 @@ class MenuServiceTest extends ServiceTest {
                 menu.getName(),
                 BigDecimal.valueOf(menuPrice),
                 menu.getMenuGroup().getId(),
-                menu.getMenuProducts().stream().map(MenuProduct::toDto).collect(Collectors.toList()));
+                menu.getMenuProducts().stream().map(MenuProduct::toRequest).collect(Collectors.toList()));
 
         when(menuGroupDao.findById(anyLong()))
                 .thenReturn(Optional.of(menuGroup));

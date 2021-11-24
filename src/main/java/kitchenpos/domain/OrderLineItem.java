@@ -34,10 +34,6 @@ public class OrderLineItem {
         this.seq = seq;
     }
 
-    public void linkOrder(Order order) {
-        this.order = order;
-    }
-
     public Long getSeq() {
         return seq;
     }

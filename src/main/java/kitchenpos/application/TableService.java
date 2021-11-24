@@ -61,7 +61,7 @@ public class TableService {
     @Transactional
     public OrderTableResponse changeNumberOfGuests(final Long orderTableId, final OrderTableRequest orderTableRequest) {
         OrderTable orderTable = new OrderTable(orderTableRequest.getNumberOfGuests(), orderTableRequest.isEmpty());
-        if (orderTable.isValidGuestNumbers()) {
+        if (orderTable.isInvalidGuestNumbers()) {
             throw new KitchenposException(IMPOSSIBLE_NUMBER_OF_GUESTS);
         }
 
