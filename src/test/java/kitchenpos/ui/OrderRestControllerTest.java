@@ -4,10 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import kitchenpos.domain.*;
-import kitchenpos.dto.MenuRequest;
-import kitchenpos.dto.MenuResponse;
-import kitchenpos.dto.OrderRequest;
-import kitchenpos.dto.OrderResponse;
+import kitchenpos.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,7 +57,8 @@ class OrderRestControllerTest extends ControllerTest {
         orderLineItems.add(orderLineItem);
 
         OrderTable orderTable = new OrderTable(0, false);
-        OrderTable savedOrderTable = postOrderTable(orderTable).as(OrderTable.class);
+        OrderTableRequest orderTableRequest = new OrderTableRequest(orderTable.getNumberOfGuests(), orderTable.isEmpty());
+        OrderTable savedOrderTable = postOrderTable(orderTableRequest).as(OrderTable.class);
 
         order = new Order(savedOrderTable, OrderStatus.COOKING.name(), LocalDateTime.now());
         order.addAllOrderLineItems(new OrderLineItems(orderLineItems));

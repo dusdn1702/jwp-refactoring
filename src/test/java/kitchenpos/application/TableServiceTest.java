@@ -4,6 +4,8 @@ import kitchenpos.dao.JpaOrderDao;
 import kitchenpos.dao.JpaOrderTableDao;
 import kitchenpos.domain.OrderTable;
 import kitchenpos.domain.TableGroup;
+import kitchenpos.dto.OrderTableRequest;
+import kitchenpos.dto.OrderTableResponse;
 import kitchenpos.exception.KitchenposException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +41,9 @@ class TableServiceTest extends ServiceTest{
     void setUp() {
         orderTable = new OrderTable(1L, 3, false);
         orderTable2 = new OrderTable(1L, 6, true);
+
+        orderTableRequest1 = new OrderTableRequest(orderTable.getNumberOfGuests(), orderTable.isEmpty());
+        orderTableRequest2 = new OrderTableRequest(orderTable2.getNumberOfGuests(), orderTable2.isEmpty());
     }
 
     @Test
@@ -46,7 +51,7 @@ class TableServiceTest extends ServiceTest{
     void create() {
         when(orderTableDao.save(any(OrderTable.class)))
                 .thenReturn(orderTable);
-        OrderTable actual = tableService.create(orderTable);
+        OrderTableResponse actual = tableService.create(orderTableRequest1);
 
         assertThat(actual.getId()).isNotNull();
         assertThat(actual).usingRecursiveComparison()
@@ -65,7 +70,7 @@ class TableServiceTest extends ServiceTest{
         when(orderTableDao.findAll())
                 .thenReturn(orderTables);
 
-        List<OrderTable> actual = tableService.list();
+        List<OrderTableResponse> actual = tableService.list();
         assertThat(actual).hasSize(2);
         assertThat(actual).usingRecursiveComparison()
                 .isEqualTo(orderTables);
@@ -82,7 +87,7 @@ class TableServiceTest extends ServiceTest{
                 .thenReturn(orderTable2);
 
         assertThat(orderTable.isEmpty()).isFalse();
-        OrderTable actual = tableService.changeEmpty(1L, orderTable2);
+        OrderTableResponse actual = tableService.changeEmpty(1L, orderTableRequest2);
         assertThat(actual.isEmpty()).isTrue();
     }
 
@@ -92,7 +97,7 @@ class TableServiceTest extends ServiceTest{
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> tableService.changeEmpty(1L, orderTable2))
+        assertThatThrownBy(() -> tableService.changeEmpty(1L, orderTableRequest2))
                 .isInstanceOf(KitchenposException.class)
                 .hasMessage(ILLEGAL_ORDER_TABLE_ID);
     }
@@ -105,7 +110,7 @@ class TableServiceTest extends ServiceTest{
         when(orderDao.existsByOrderTable_IdAndOrderStatusIn(anyLong(), anyList()))
                 .thenReturn(true);
 
-        assertThatThrownBy(() -> tableService.changeEmpty(1L, orderTable2))
+        assertThatThrownBy(() -> tableService.changeEmpty(1L, orderTableRequest2))
                 .isInstanceOf(KitchenposException.class)
                 .hasMessage(IMPOSSIBLE_TABLE_STATUS);
     }
@@ -117,18 +122,22 @@ class TableServiceTest extends ServiceTest{
                 .thenReturn(Optional.of(orderTable));
         assertThat(orderTable.getNumberOfGuests()).isEqualTo(3);
 
-        orderTable.changeNumberOfGuests(orderTable2.getNumberOfGuests());
+        orderTable.changeNumberOfGuests(orderTable2);
         when(orderTableDao.save(any(OrderTable.class)))
                 .thenReturn(orderTable);
-        OrderTable actual = tableService.changeEmpty(1L, orderTable2);
+        OrderTableResponse actual = tableService.changeEmpty(1L, orderTableRequest2);
         assertThat(actual.getNumberOfGuests()).isEqualTo(6);
     }
 
     @Test
     @DisplayName("주문 테이블의 손님 수가 0보다 작으면 에러가 발생한다.")
     void changeNumberOfGuestsExceptionNegative() {
-        orderTable.changeNumberOfGuests(-1);
-        assertThatThrownBy(() -> tableService.changeNumberOfGuests(1L, orderTable))
+        OrderTable changedOrderTable = new OrderTable(-1, orderTable.isEmpty());
+        orderTable.changeNumberOfGuests(changedOrderTable);
+
+        OrderTableRequest orderTableRequest = new OrderTableRequest(changedOrderTable.getNumberOfGuests(), changedOrderTable.isEmpty());
+
+        assertThatThrownBy(() -> tableService.changeNumberOfGuests(1L, orderTableRequest))
                 .isInstanceOf(KitchenposException.class)
                 .hasMessage(IMPOSSIBLE_NUMBER_OF_GUESTS);
     }
@@ -138,7 +147,7 @@ class TableServiceTest extends ServiceTest{
     void changeNumberOfGuestsExceptionIllegalTable() {
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.empty());
-        assertThatThrownBy(() -> tableService.changeNumberOfGuests(1L, orderTable2))
+        assertThatThrownBy(() -> tableService.changeNumberOfGuests(1L, orderTableRequest2))
                 .isInstanceOf(KitchenposException.class)
                 .hasMessage(ILLEGAL_ORDER_TABLE_ID);
     }
@@ -149,7 +158,7 @@ class TableServiceTest extends ServiceTest{
         orderTable.makeEmpty(true);
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.of(orderTable));
-        assertThatThrownBy(() -> tableService.changeNumberOfGuests(1L, orderTable2))
+        assertThatThrownBy(() -> tableService.changeNumberOfGuests(1L, orderTableRequest2))
                 .isInstanceOf(KitchenposException.class)
                 .hasMessage(EMPTY_ORDER_TABLE);
     }

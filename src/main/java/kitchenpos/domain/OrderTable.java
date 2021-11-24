@@ -1,5 +1,6 @@
 package kitchenpos.domain;
 
+import kitchenpos.dto.OrderTableRequest;
 import kitchenpos.dto.OrderTableResponse;
 
 import javax.persistence.*;
@@ -38,12 +39,20 @@ public class OrderTable {
         return new OrderTable(orderTableResponse.getId(), orderTableResponse.getNumberOfGuests(), orderTableResponse.isEmpty());
     }
 
+    public static OrderTable of(OrderTableRequest orderTableRequest) {
+        return new OrderTable(orderTableRequest.getId(), orderTableRequest.getNumberOfGuests(), orderTableRequest.isEmpty());
+    }
+
     public void makeEmpty(boolean empty) {
         this.empty = empty;
     }
 
-    public void changeNumberOfGuests(int numberOfGuests) {
-        this.numberOfGuests = numberOfGuests;
+    public void changeNumberOfGuests(OrderTable orderTable) {
+        this.numberOfGuests = orderTable.numberOfGuests;
+    }
+
+    public boolean isValidGuestNumbers() {
+        return numberOfGuests < 0;
     }
 
     public Long getId() {

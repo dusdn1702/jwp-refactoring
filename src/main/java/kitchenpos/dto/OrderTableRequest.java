@@ -1,23 +1,21 @@
 package kitchenpos.dto;
 
-import kitchenpos.domain.OrderTable;
-
-public class OrderTableResponse {
+public class OrderTableRequest {
     private Long id;
     private int numberOfGuests;
     private boolean empty;
 
-    public OrderTableResponse() {
+    public OrderTableRequest() {
     }
 
-    public OrderTableResponse(Long id, int numberOfGuests, boolean empty) {
-        this.id = id;
+    public OrderTableRequest(int numberOfGuests, boolean empty) {
         this.numberOfGuests = numberOfGuests;
         this.empty = empty;
     }
 
-    public static OrderTableResponse of(OrderTable orderTable) {
-        return new OrderTableResponse(orderTable.getId(), orderTable.getNumberOfGuests(), orderTable.isEmpty());
+    public OrderTableRequest(Long id, int numberOfGuests, boolean empty) {
+        this(numberOfGuests, empty);
+        this.id = id;
     }
 
     public Long getId() {
