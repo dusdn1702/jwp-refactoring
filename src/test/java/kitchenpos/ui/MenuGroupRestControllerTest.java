@@ -14,6 +14,16 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MenuGroupRestControllerTest extends ControllerTest {
+    static ExtractableResponse<Response> postMenuGroup(MenuGroup menuGroup) {
+        return RestAssured
+                .given().log().all()
+                .accept("application/json")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(menuGroup)
+                .when().post("/api/menu-groups")
+                .then().log().all().extract();
+    }
+
     @Test
     @DisplayName("menu group 생성")
     void create() {
@@ -39,16 +49,6 @@ class MenuGroupRestControllerTest extends ControllerTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body().as(List.class)).hasSize(2);
-    }
-
-    static ExtractableResponse<Response> postMenuGroup(MenuGroup menuGroup) {
-        return RestAssured
-                .given().log().all()
-                .accept("application/json")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(menuGroup)
-                .when().post("/api/menu-groups")
-                .then().log().all().extract();
     }
 
     private ExtractableResponse<Response> getMenuGroups() {

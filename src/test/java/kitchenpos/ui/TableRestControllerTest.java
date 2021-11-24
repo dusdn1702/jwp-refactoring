@@ -16,6 +16,16 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TableRestControllerTest extends ControllerTest {
+    static ExtractableResponse<Response> postOrderTable(OrderTableRequest orderTableRequest) {
+        return RestAssured
+                .given().log().all()
+                .accept("application/json")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(orderTableRequest)
+                .when().post("/api/tables")
+                .then().log().all().extract();
+    }
+
     @Test
     @DisplayName("OrderTable 생성")
     void create() {
@@ -76,16 +86,6 @@ class TableRestControllerTest extends ControllerTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(changedTable.getNumberOfGuests()).isEqualTo(changedTable.getNumberOfGuests());
-    }
-
-    static ExtractableResponse<Response> postOrderTable(OrderTableRequest orderTableRequest) {
-        return RestAssured
-                .given().log().all()
-                .accept("application/json")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(orderTableRequest)
-                .when().post("/api/tables")
-                .then().log().all().extract();
     }
 
     private ExtractableResponse<Response> getOrderTables() {

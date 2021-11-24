@@ -1,6 +1,5 @@
 package kitchenpos.domain;
 
-import kitchenpos.dto.OrderTableRequest;
 import kitchenpos.dto.TableGroupRequest;
 
 import javax.persistence.*;
@@ -34,7 +33,7 @@ public class TableGroup {
         this.id = id;
     }
 
-    public TableGroup(LocalDateTime createdDate, List<OrderTable> orderTables){
+    public TableGroup(LocalDateTime createdDate, List<OrderTable> orderTables) {
         this(createdDate);
         this.orderTables = orderTables;
     }

@@ -15,6 +15,16 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ProductRestControllerTest extends ControllerTest {
+    static ExtractableResponse<Response> postProduct(Product product) {
+        return RestAssured
+                .given().log().all()
+                .accept("application/json")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(product)
+                .when().post("/api/products")
+                .then().log().all().extract();
+    }
+
     @Test
     @DisplayName("Product 생성")
     void create() {
@@ -40,16 +50,6 @@ class ProductRestControllerTest extends ControllerTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body().as(List.class)).hasSize(2);
-    }
-
-    static ExtractableResponse<Response> postProduct(Product product) {
-        return RestAssured
-                .given().log().all()
-                .accept("application/json")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(product)
-                .when().post("/api/products")
-                .then().log().all().extract();
     }
 
     private ExtractableResponse<Response> getProducts() {

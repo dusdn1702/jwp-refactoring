@@ -1,6 +1,6 @@
 package kitchenpos.exception;
 
-public class KitchenposException extends IllegalArgumentException{
+public class KitchenposException extends IllegalArgumentException {
     public static final String ILLEGAL_PRICE = "옳지 않은 가격입니다.";
     public static final String ILLEGAL_MENU_GROUP_ID = "존재하지 않는 메뉴그룹입니다.";
     public static final String ILLEGAL_MENU_PRODUCT_ID = "존재하지 않는 메뉴 상품입니다.";

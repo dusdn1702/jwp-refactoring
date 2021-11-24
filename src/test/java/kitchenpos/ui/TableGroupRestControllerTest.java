@@ -26,6 +26,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TableGroupRestControllerTest extends ControllerTest {
     private TableGroupRequest tableGroupRequest;
 
+    static ExtractableResponse<Response> postTableGroup(TableGroupRequest tableGroupRequest) {
+        return RestAssured
+                .given().log().all()
+                .accept("application/json")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(tableGroupRequest)
+                .when().post("/api/table-groups")
+                .then().log().all().extract();
+    }
+
     @Override
     @BeforeEach
     void setUp() {
@@ -71,16 +81,6 @@ class TableGroupRestControllerTest extends ControllerTest {
 
         ExtractableResponse<Response> response = deleteTableGroup(savedTableGroup.getId());
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    static ExtractableResponse<Response> postTableGroup(TableGroupRequest tableGroupRequest) {
-        return RestAssured
-                .given().log().all()
-                .accept("application/json")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(tableGroupRequest)
-                .when().post("/api/table-groups")
-                .then().log().all().extract();
     }
 
     private ExtractableResponse<Response> deleteTableGroup(Long tableGroupId) {

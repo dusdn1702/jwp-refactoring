@@ -26,6 +26,16 @@ class OrderRestControllerTest extends ControllerTest {
     private Order order;
     private OrderRequest orderRequest;
 
+    static ExtractableResponse<Response> postOrder(OrderRequest orderRequest) {
+        return RestAssured
+                .given().log().all()
+                .accept("application/json")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(orderRequest)
+                .when().post("/api/orders")
+                .then().log().all().extract();
+    }
+
     @BeforeEach
     void setUp() {
         super.setUp();
@@ -105,16 +115,6 @@ class OrderRestControllerTest extends ControllerTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(changedOrder.getOrderStatus()).isEqualTo(changedOrder.getOrderStatus());
-    }
-
-    static ExtractableResponse<Response> postOrder(OrderRequest orderRequest) {
-        return RestAssured
-                .given().log().all()
-                .accept("application/json")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(orderRequest)
-                .when().post("/api/orders")
-                .then().log().all().extract();
     }
 
     private ExtractableResponse<Response> getOrders() {

@@ -4,7 +4,8 @@ public class MenuProductRequest {
     private long productId;
     private long quantity;
 
-    public MenuProductRequest() {}
+    public MenuProductRequest() {
+    }
 
     public MenuProductRequest(long productId, long quantity) {
         this.productId = productId;

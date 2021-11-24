@@ -1,7 +1,5 @@
 package kitchenpos.domain;
 
-import kitchenpos.dto.OrderLineItemResponse;
-
 import javax.persistence.*;
 
 @Entity

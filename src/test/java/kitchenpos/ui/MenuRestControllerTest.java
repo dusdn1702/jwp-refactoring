@@ -5,8 +5,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import kitchenpos.domain.MenuGroup;
 import kitchenpos.domain.Product;
-import kitchenpos.dto.MenuRequest;
 import kitchenpos.dto.MenuProductRequest;
+import kitchenpos.dto.MenuRequest;
 import kitchenpos.dto.MenuResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +22,16 @@ import static kitchenpos.ui.ProductRestControllerTest.postProduct;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MenuRestControllerTest extends ControllerTest {
+    static ExtractableResponse<Response> postMenu(MenuRequest menu) {
+        return RestAssured
+                .given().log().all()
+                .accept("application/json")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(menu)
+                .when().post("/api/menus")
+                .then().log().all().extract();
+    }
+
     @Test
     @DisplayName("menu 생성")
     void create() {
@@ -50,16 +60,6 @@ class MenuRestControllerTest extends ControllerTest {
         ExtractableResponse<Response> response = getMenus();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body().as(List.class)).isEmpty();
-    }
-
-    static ExtractableResponse<Response> postMenu(MenuRequest menu) {
-        return RestAssured
-                .given().log().all()
-                .accept("application/json")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(menu)
-                .when().post("/api/menus")
-                .then().log().all().extract();
     }
 
     private ExtractableResponse<Response> getMenus() {
