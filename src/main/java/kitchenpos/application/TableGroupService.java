@@ -1,6 +1,8 @@
 package kitchenpos.application;
 
-import kitchenpos.dao.*;
+import kitchenpos.dao.JpaOrderDao;
+import kitchenpos.dao.JpaOrderTableDao;
+import kitchenpos.dao.JpaTableGroupDao;
 import kitchenpos.domain.OrderStatus;
 import kitchenpos.domain.OrderTable;
 import kitchenpos.domain.TableGroup;
@@ -9,12 +11,10 @@ import kitchenpos.dto.TableGroupResponse;
 import kitchenpos.exception.KitchenposException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static kitchenpos.exception.KitchenposException.*;
 
@@ -33,57 +33,55 @@ public class TableGroupService {
     @Transactional
     public TableGroupResponse create(final TableGroupRequest tableGroupRequest) {
         TableGroup tableGroup = TableGroup.of(tableGroupRequest);
+        OrderTables orderTables = new OrderTables(tableGroup.getOrderTables());
+        OrderTables savedOrderTables = makeValidOrderTables(orderTables);
 
-        final List<OrderTable> orderTables = tableGroup.getOrderTables();
+        tableGroup.tableCreatedAt(LocalDateTime.now());
+        TableGroup savedTableGroup = tableGroupDao.save(tableGroup);
+        saveTables(savedOrderTables, savedTableGroup);
 
-        if (CollectionUtils.isEmpty(orderTables) || orderTables.size() < 2) {
+        return TableGroupResponse.of(savedTableGroup);
+    }
+
+    private OrderTables makeValidOrderTables(OrderTables orderTables) {
+        if (orderTables.isValidSize()) {
             throw new KitchenposException(KitchenposException.ILLEGAL_TABLE_SIZE_MINIMUM);
         }
 
-        final List<Long> orderTableIds = orderTables.stream()
-                .map(OrderTable::getId)
-                .collect(Collectors.toList());
+        List<Long> orderTableIds = orderTables.getOrderTableIds();
+        OrderTables savedOrderTables = new OrderTables(orderTableDao.findAllByIdIn(orderTableIds));
 
-        final List<OrderTable> savedOrderTables = orderTableDao.findAllByIdIn(orderTableIds);
-
-        if (orderTables.size() != savedOrderTables.size()) {
+        if (orderTables.isNotSameSize(savedOrderTables)) {
             throw new KitchenposException(ILLEGAL_TABLE_SIZE);
         }
 
-        for (final OrderTable savedOrderTable : savedOrderTables) {
-            if (!savedOrderTable.isEmpty()) {
-                throw new KitchenposException(NOT_EMPTY_TABLE_TO_CREATE);
-            }
+        if (!orderTables.isAllEmpty()) {
+            throw new KitchenposException(NOT_EMPTY_TABLE_TO_CREATE);
         }
-        tableGroup.tableCreatedAt(LocalDateTime.now());
 
-        final TableGroup savedTableGroup = tableGroupDao.save(tableGroup);
+        return savedOrderTables;
+    }
 
-        for (OrderTable savedOrderTable : savedOrderTables) {
-            savedOrderTable = new OrderTable(savedOrderTable.getNumberOfGuests(), savedOrderTable.isEmpty());
-            orderTableDao.save(savedOrderTable);
-        }
-        savedTableGroup.addAllOrderTables(savedOrderTables);
-
-        return TableGroupResponse.of(savedTableGroup);
+    private void saveTables(OrderTables orderTables, TableGroup tableGroup) {
+        List<OrderTable> tables = orderTables.getTables();
+        orderTableDao.saveAll(tables);
+        tableGroup.addAllOrderTables(tables);
     }
 
     @Transactional
     public void ungroup(final Long tableGroupId) {
         TableGroup tableGroup = tableGroupDao.findById(tableGroupId)
-                .orElseThrow(() -> new KitchenposException("12312"));
-        final List<OrderTable> orderTables = tableGroup.getOrderTables();
-
-        final List<Long> orderTableIds = orderTables.stream()
-                .map(OrderTable::getId)
-                .collect(Collectors.toList());
+                .orElseThrow(() -> new KitchenposException(ILLEGAL_TABLE_GROUP_ID));
+        OrderTables orderTables = new OrderTables(tableGroup.getOrderTables());
+        List<Long> orderTableIds = orderTables.getOrderTableIds();
 
         if (orderDao.existsByOrderTable_IdInAndOrderStatusIn(
-                orderTableIds, Arrays.asList(OrderStatus.COOKING.name(), OrderStatus.MEAL.name()))) {
+                orderTableIds,
+                Arrays.asList(OrderStatus.COOKING.name(), OrderStatus.MEAL.name()))) {
             throw new KitchenposException(IMPOSSIBLE_TABLE_STATUS);
         }
 
-        for (final OrderTable orderTable : orderTables) {
+        for (OrderTable orderTable : orderTables.getTables()) {
             orderTableDao.save(orderTable);
         }
     }

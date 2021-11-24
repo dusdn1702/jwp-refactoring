@@ -45,6 +45,9 @@ class TableGroupServiceTest extends ServiceTest {
         for (OrderTable orderTable : tableGroup.getOrderTables()) {
             orderTable.makeEmpty(true);
         }
+        orderTableRequest1 = new OrderTableRequest(orderTable.getNumberOfGuests(), orderTable.isEmpty());
+        orderTableRequest2 = new OrderTableRequest(orderTable2.getNumberOfGuests(), orderTable2.isEmpty());
+        tableGroupRequest = new TableGroupRequest(tableGroup.getCreatedDate(), List.of(orderTableRequest1, orderTableRequest2));
 
         when(orderTableDao.findAllByIdIn(anyList()))
                 .thenReturn(tableGroup.getOrderTables());
@@ -76,6 +79,7 @@ class TableGroupServiceTest extends ServiceTest {
         anotherOrderTables.add(orderTable);
         anotherOrderTables.add(orderTable2);
         anotherOrderTables.add(orderTable2);
+
         when(orderTableDao.findAllByIdIn(anyList()))
                 .thenReturn(anotherOrderTables);
 
@@ -88,6 +92,7 @@ class TableGroupServiceTest extends ServiceTest {
     @DisplayName("테이블 그룹 내 테이블이 비어있지 않으면 에러가 발생한다.")
     void createExceptionTableEmpty() {
         orderTable.makeEmpty(false);
+
         when(orderTableDao.findAllByIdIn(anyList()))
                 .thenReturn(tableGroup.getOrderTables());
 
