@@ -4,6 +4,8 @@ import kitchenpos.dao.*;
 import kitchenpos.domain.OrderStatus;
 import kitchenpos.domain.OrderTable;
 import kitchenpos.domain.TableGroup;
+import kitchenpos.dto.TableGroupRequest;
+import kitchenpos.dto.TableGroupResponse;
 import kitchenpos.exception.KitchenposException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +31,9 @@ public class TableGroupService {
     }
 
     @Transactional
-    public TableGroup create(final TableGroup tableGroup) {
+    public TableGroupResponse create(final TableGroupRequest tableGroupRequest) {
+        TableGroup tableGroup = TableGroup.of(tableGroupRequest);
+
         final List<OrderTable> orderTables = tableGroup.getOrderTables();
 
         if (CollectionUtils.isEmpty(orderTables) || orderTables.size() < 2) {
@@ -61,7 +65,7 @@ public class TableGroupService {
         }
         savedTableGroup.addAllOrderTables(savedOrderTables);
 
-        return savedTableGroup;
+        return TableGroupResponse.of(savedTableGroup);
     }
 
     @Transactional

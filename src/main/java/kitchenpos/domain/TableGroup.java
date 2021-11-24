@@ -1,8 +1,12 @@
 package kitchenpos.domain;
 
+import kitchenpos.dto.OrderTableRequest;
+import kitchenpos.dto.TableGroupRequest;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "table_group")
@@ -28,6 +32,19 @@ public class TableGroup {
     public TableGroup(Long id, LocalDateTime createdDate) {
         this(createdDate);
         this.id = id;
+    }
+
+    public TableGroup(LocalDateTime createdDate, List<OrderTable> orderTables){
+        this(createdDate);
+        this.orderTables = orderTables;
+    }
+
+    public static TableGroup of(TableGroupRequest tableGroupRequest) {
+        List<OrderTable> orderTables = tableGroupRequest.getOrderTableRequests().stream()
+                .map(OrderTable::of)
+                .collect(Collectors.toList());
+
+        return new TableGroup(tableGroupRequest.getCreatedDate(), orderTables);
     }
 
     public void addAllOrderTables(List<OrderTable> orderTables) {
